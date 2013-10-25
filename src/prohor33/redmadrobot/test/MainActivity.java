@@ -1,15 +1,6 @@
 package prohor33.redmadrobot.test;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,18 +11,24 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
 	
+	protected static Bitmap current_collage_preview;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		System.out.println("Hello world!");
 		System.out.println("Hey");
 		
+		if (current_collage_preview != null) {
+			System.out.println("Create image view!");
+			CreateImageView(current_collage_preview);
+		}
 				
         final Button button = (Button) findViewById(R.id.GiveMeCollage);
         button.setOnClickListener(new View.OnClickListener() {
@@ -50,12 +47,10 @@ public class MainActivity extends Activity {
 	        			String exception_mess = new String();
 	        			CollageMaker collage_maker = new CollageMaker();
 	        			try {
-	        				collage = collage_maker.GimmeCollage(urlStr[0]);
+	        				collage = collage_maker.GimmeCollage(urlStr[0]);	        				
 	       				
 	        			} catch(IOException e) {
-	        				//System.out.println(e.getMessage());
 	        				exception_mess = e.getMessage();
-	        				//messageBox("GimmeCollage", e.getMessage());
 	        			}
 	        			return exception_mess;
 	        		  }         
@@ -68,15 +63,22 @@ public class MainActivity extends Activity {
 	        				 messageBox("Internet Connection Problem", result);
 	        			 }
 	        			 else {
-	         				ImageView iv = new ImageView(MainActivity.this);	        				
-	        				iv.setImageBitmap(collage);
-	        				RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-	        				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-	        				    RelativeLayout.LayoutParams.WRAP_CONTENT,
-	        				    RelativeLayout.LayoutParams.WRAP_CONTENT);
-	        				lp.addRule(RelativeLayout.BELOW, R.id.GiveMeCollage);
-	        				lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-	        				rl.addView(iv, lp);
+	        				 
+	        				Bitmap preview;
+	         				if (collage.getWidth() > 480) { // too big
+	         					System.out.println("comress collgae to make preview");
+	         					float coef = collage.getWidth() / 480;
+	         					preview = Bitmap.createScaledBitmap(collage,
+	         							(int)coef*collage.getWidth(), (int)coef*collage.getHeight(), false);
+	         				}
+	         				else {
+	         					preview = collage;
+	         				}	        				 
+	         				current_collage_preview = preview;
+	         				
+	        				System.out.println("Start changing view...");
+	        				CreateImageView(preview);
+
 	        			 }
 	        		  }
 	        		}.execute("tom");
@@ -105,5 +107,58 @@ public class MainActivity extends Activity {
 	    messageBox.setCancelable(false);
 	    messageBox.setNeutralButton("OK", null);
 	    messageBox.show();
-	}	
+	}
+	
+	private void CreateImageView (Bitmap image_preview) {
+		// create image view
+		ImageView iv = new ImageView(MainActivity.this);
+		iv.setImageBitmap(image_preview);
+		
+		int image_view_id = 91;	// random number (for simplicity)
+		iv.setId(image_view_id);
+		RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);
+		
+		System.out.println("1.0");
+		
+		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+		    RelativeLayout.LayoutParams.WRAP_CONTENT,
+		    RelativeLayout.LayoutParams.WRAP_CONTENT);
+		
+		System.out.println("1.1");
+		
+		lp.addRule(RelativeLayout.CENTER_VERTICAL);
+		lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		
+		System.out.println("1.2");
+		
+		lp.setMargins(0, 60, 0, 0);
+		rl.addView(iv, lp);
+		
+		System.out.println("1.3");
+		
+		// edit text reposition
+		EditText et = (EditText) findViewById(R.id.entry);	        				
+		RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
+			    RelativeLayout.LayoutParams.WRAP_CONTENT,
+			    RelativeLayout.LayoutParams.WRAP_CONTENT);
+		lp2 = (RelativeLayout.LayoutParams) et.getLayoutParams();		        			
+		lp2.addRule(RelativeLayout.ABOVE, image_view_id);		        			
+		et.setLayoutParams(lp2);
+		
+		System.out.println("1.4");
+		
+		// create new button
+			Button bt = new Button(MainActivity.this);	        				
+			bt.setText("Send by email");        				
+		RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
+		    RelativeLayout.LayoutParams.WRAP_CONTENT,
+		    RelativeLayout.LayoutParams.WRAP_CONTENT);
+		lp3.addRule(RelativeLayout.BELOW, image_view_id);
+		lp3.addRule(RelativeLayout.ALIGN_RIGHT);
+		lp3.setMargins(0, 10, 0, 0);       				
+		lp3.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		rl.addView(bt, lp3);	
+		
+		System.out.println("1.5");
+	}
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -33,7 +32,7 @@ public class CollageMaker {
 	    		+ user_name + "'s page");
 	    }
 		
-		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 2, 0.1f);
+		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 3, 1.0f);
 		
 		return collage;
 	}
@@ -71,15 +70,13 @@ public class CollageMaker {
 				break;            		    	
 	    	int ind_link_end = html_code.indexOf("\"", ind_link+8);
 	    	String link = html_code.substring(ind_link+8, ind_link_end);
-	    	System.out.println("link = " + link);
+
 			int ind_likes = html_code.indexOf("\"likes\":{\"count\":", ind_link);
 			int ind_data = html_code.indexOf(",\"data\":", ind_likes);	            			
 			curr_index = ind_data;
-//    			System.out.println("ind_likes = " + ind_likes +
-//    					" ind_data = " + ind_data);    			
+ 			
 			String likes_q = html_code.substring(ind_likes+17, ind_data);	            			
-			Integer likes = Integer.valueOf(likes_q);	            			
-			System.out.println("likes = " + likes);
+			Integer likes = Integer.valueOf(likes_q);
 			
 			my_photo_map.put(likes, link);
 	    }
@@ -102,11 +99,9 @@ public class CollageMaker {
 		String fnd_str = new String("<meta property=\"og:image\" content=\"");
 		int image_link_start = html_source.indexOf(fnd_str);
 		image_link_start += fnd_str.length();
-		System.out.println("image_link_start: "+image_link_start);
 		
 		int image_link_end = html_source.indexOf(
 				"\"", image_link_start);
-		System.out.println("image_link_end: "+image_link_end);
 		
 		String image_link = html_source.substring(image_link_start,
 				image_link_end);
@@ -114,6 +109,9 @@ public class CollageMaker {
 		System.out.println("Link: "+image_link);
 		
 		Bitmap bitmap = loadBitmap(image_link);
+		float coef = 0.5f;
+		bitmap = Bitmap.createScaledBitmap(bitmap,
+				(int)(coef*bitmap.getWidth()), (int)(coef*bitmap.getHeight()), false);
 		System.out.println(bitmap.getHeight());
 		
 		return bitmap;
@@ -126,14 +124,14 @@ public class CollageMaker {
 	}
 	
 	protected Bitmap MakeCollageFromBitmapes(SortedMap<Integer, String> photo_map,
-			int collage_size, int size_y, float coef) throws IOException {
+			int collage_size, int size_x, float coef) throws IOException {
 		
 		collage_size = photo_map.size() >= collage_size ? collage_size : photo_map.size();
-		int size_x = collage_size / size_y;
-		int image_size = (int)(612*coef); // is it always true for the instagram?
+		int size_y = collage_size / size_x;
+		int image_size = (int)(612*0.5f*coef); // is it always true for the instagram?
 		
 		Bitmap bg = Bitmap.createBitmap(image_size * size_x,
-				image_size * size_y, Config.ARGB_8888);
+				image_size * size_y, Config.RGB_565);
 			            
 	    Canvas comboImage = new Canvas(bg);
 	    
@@ -143,6 +141,7 @@ public class CollageMaker {
 	    	for (int y=0; y<size_y; y++) {
 	    		if (photo_map.size()-1-i >= 0) {
 					image = FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
+					image = Bitmap.createScaledBitmap(image, image_size, image_size, false);
 					i++;
 					comboImage.drawBitmap(image, image_size*x, image_size*y, null);
 	    		}
