@@ -18,7 +18,7 @@ import android.graphics.Canvas;
 
 public class CollageMaker {
 	
-	public String GimmeCollage(String user_name) throws IOException {
+	public Bitmap GimmeCollage(String user_name) throws IOException {
 		String html_code = LoadHtmlCode("http://www.instagram.com/" + user_name);
 	    
 		if (html_code.isEmpty()) {
@@ -33,9 +33,9 @@ public class CollageMaker {
 	    		+ user_name + "'s page");
 	    }
 		
-		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 2, 0.5f);
+		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 2, 0.1f);
 		
-		return new String();
+		return collage;
 	}
 	
 	protected String LoadHtmlCode(String link) throws IOException {
@@ -144,7 +144,7 @@ public class CollageMaker {
 	    		if (photo_map.size()-1-i >= 0) {
 					image = FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
 					i++;
-					comboImage.drawBitmap(image, size_x*x, size_y*y, null);
+					comboImage.drawBitmap(image, image_size*x, image_size*y, null);
 	    		}
 	    	}
 	    }

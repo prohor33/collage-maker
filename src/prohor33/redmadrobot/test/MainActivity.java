@@ -15,11 +15,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
 	
@@ -35,10 +37,11 @@ public class MainActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
             	System.out.println("button1 click");
-            	
-            	
+            	           	
 
 	        	new AsyncTask<String, Void, String>(){
+	        		
+	        		Bitmap collage;
 	        		
 	        		  @Override
 	        		  protected String doInBackground(String... urlStr){        			  
@@ -47,7 +50,7 @@ public class MainActivity extends Activity {
 	        			String exception_mess = new String();
 	        			CollageMaker collage_maker = new CollageMaker();
 	        			try {
-	        				collage_maker.GimmeCollage(urlStr[0]);
+	        				collage = collage_maker.GimmeCollage(urlStr[0]);
 	       				
 	        			} catch(IOException e) {
 	        				//System.out.println(e.getMessage());
@@ -64,17 +67,17 @@ public class MainActivity extends Activity {
 	        			 if (result.length() != 0) {
 	        				 messageBox("Internet Connection Problem", result);
 	        			 }
-/*	        			 else {
-	         				ImageView iv = new ImageView(ParentActivity.this);
-	        				iv.setImageResource(R.drawable.beerbottle);
+	        			 else {
+	         				ImageView iv = new ImageView(MainActivity.this);	        				
+	        				iv.setImageBitmap(collage);
 	        				RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);
 	        				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 	        				    RelativeLayout.LayoutParams.WRAP_CONTENT,
 	        				    RelativeLayout.LayoutParams.WRAP_CONTENT);
-	        				lp.addRule(RelativeLayout.BELOW, R.id.ButtonRecalculate);
-	        				lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+	        				lp.addRule(RelativeLayout.BELOW, R.id.GiveMeCollage);
+	        				lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
 	        				rl.addView(iv, lp);
-	        			 }*/
+	        			 }
 	        		  }
 	        		}.execute("tom");
             	
