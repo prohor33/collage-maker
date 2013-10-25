@@ -33,72 +33,22 @@ public class MainActivity extends Activity {
             	System.out.println("button1 click");
             	
 
-            	new AsyncTask<String, Void, String>(){
-            		  @Override
-            		  protected String doInBackground(String... urlStr){
-            		    // do stuff on non-UI thread
-            		    String htmlCode = new String();
-            		    try{
-            		    	//URL url = new URL( "http://www.thecinemas.aw/main/" );
-            		    	URL url = new URL(urlStr[0]);
-            		    	URLConnection connection = (URLConnection)url.openConnection();
-            		    	
-            		    	// to download desktop page
-            		    	connection.setRequestProperty( "User-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)" +
-            		    			" AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4" );
-            		    	
-            		    	BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        	new AsyncTask<String, Void, String>(){
+        		
+        		  @Override
+        		  protected String doInBackground(String... urlStr){        			  
+        		    // do stuff on non-UI thread
+        			CollageMaker collage_maker = new CollageMaker();
+        			collage_maker.GimmeCollage(urlStr[0]);
+        			return new String();
+        		  }         
 
-            		      String inputLine;
+        		  @Override
+        		  protected void onPostExecute(String result){
+        		    // do stuff on UI thread with the html
 
-            		      while ((inputLine = in.readLine()) != null) {
-            		        htmlCode += inputLine;
-            		        //System.out.println("html: " + inputLine);
-            		      }
-
-            		      in.close();
-            		    } catch (Exception e) {
-            		        e.printStackTrace();
-            		        System.out.println("Error: " + e.getMessage());
-            		        System.out.println("HTML CODE: " + htmlCode);
-            		    }
-            		    return htmlCode.toString();
-            		  }         
-
-            		  @Override
-            		  protected void onPostExecute(String htmlCode){
-            		    // do stuff on UI thread with the html
-            		    if (htmlCode.isEmpty()) {
-            		    	System.out.println("Error: No internet connection?");
-            		    	return;
-            		    }
-            		    	
-            		    //System.out.println(htmlCode);
-            		    int curr_index = 0;
-            		    SortedMap<Integer, String> MyPhotoMap = new TreeMap<Integer, String>();
-            		    while (true) {
-            		    	int ind_link = htmlCode.indexOf("\"link\":\"", curr_index);
-	            			if (ind_link < 0)
-	            				break;            		    	
-            		    	int ind_link_end = htmlCode.indexOf("\"", ind_link+8);
-            		    	String link = htmlCode.substring(ind_link+8, ind_link_end);
-            		    	System.out.println("link = " + link);
-	            			int ind_likes = htmlCode.indexOf("\"likes\":{\"count\":", ind_link);
-	            			int ind_data = htmlCode.indexOf(",\"data\":", ind_likes);	            			
-	            			curr_index = ind_data;
-//	            			System.out.println("ind_likes = " + ind_likes +
-//	            					" ind_data = " + ind_data);    			
-	            			String likes_q = htmlCode.substring(ind_likes+17, ind_data);	            			
-	            			Integer likes = Integer.valueOf(likes_q);	            			
-	            			System.out.println("likes = " + likes);
-	            			
-	            			MyPhotoMap.put(likes, link);
-            		    }
-            		    for(Map.Entry<Integer, String> entry : MyPhotoMap.entrySet()) {
-            		        System.out.println(entry.getValue());
-            		    } // outputs from smaller to bigger
-            		  }
-            		}.execute("http://www.instagram.com/tom");
+        		  }
+        		}.execute("tom");
             	
             }
         });		
