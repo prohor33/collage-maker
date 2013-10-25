@@ -10,35 +10,35 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 
 public class CollageMaker {
 	
-	public String GimmeCollage(String user_name) {
+	public String GimmeCollage(String user_name) throws IOException {
 		String html_code = LoadHtmlCode("http://www.instagram.com/" + user_name);
 	    
 		if (html_code.isEmpty()) {
-	    	System.out.println("Error: No internet connection?");
-	    	return new String();
+	    	throw new IOException("No internet connection or wrong nickname");	    	
 	    }
 	    
 		SortedMap<Integer, String> photo_map;
 		photo_map = FindAndSortAllImageLinks(html_code);
 		
 		if (photo_map.size() < 1) {
-	    	System.out.println("Error: There is no photos on the "
+	    	throw new IOException("Error: There is no photos on the "
 	    		+ user_name + "'s page");
-	    	return new String();
 	    }
 		
-		for (int i=0; i<(photo_map.size() >= 6 ? 6 : photo_map.size()); i++) {
-			FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
-		}
+		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 2, 0.5f);
+		
 		return new String();
 	}
 	
-	protected String LoadHtmlCode(String link) {
+	protected String LoadHtmlCode(String link) throws IOException {
 	    String html_code = new String();
 	    try{
 	    	URL url = new URL(link);
@@ -57,9 +57,7 @@ public class CollageMaker {
 
 	    	in.close();
 	    } catch (Exception e) {
-	        e.printStackTrace();
-	        System.out.println("Error: " + e.getMessage());
-	        System.out.println("HTML CODE: " + html_code);
+	    	throw new IOException(e.getMessage());	        
 	    }
 	    return html_code.toString();		
 	}
@@ -91,14 +89,15 @@ public class CollageMaker {
 	    return my_photo_map;
 	}
 	
-	protected String FindAndLoadImage(String link_source) {
+	protected Bitmap FindAndLoadImage(String link_source) throws IOException {
 			
 		// need to replace all \/ -> /
-		link_source = link_source.replaceAll("\\\\", "");		
-		System.out.println("replace \\/ -> /");
-		System.out.println(link_source);
+		link_source = link_source.replaceAll("\\\\", "");
 		
 		String html_source = LoadHtmlCode(link_source);
+		if (html_source.isEmpty()) {
+			throw new IOException("Lost internet connection");			
+		}
 		
 		String fnd_str = new String("<meta property=\"og:image\" content=\"");
 		int image_link_start = html_source.indexOf(fnd_str);
@@ -117,17 +116,40 @@ public class CollageMaker {
 		Bitmap bitmap = loadBitmap(image_link);
 		System.out.println(bitmap.getHeight());
 		
-		return new String();
+		return bitmap;
 	}
 	
-	public static Bitmap loadBitmap(String url) {
-		Bitmap bitmap = null;
-		try {
-			bitmap = BitmapFactory.decodeStream((InputStream)new URL(url).getContent());
-		} catch (IOException e) {
-	        
-	    } finally {	        
-	    }		
+	protected static Bitmap loadBitmap(String url) throws IOException {
+		Bitmap bitmap = null;		
+		bitmap = BitmapFactory.decodeStream((InputStream)new URL(url).getContent());		   		
 	    return bitmap;
-	}	
+	}
+	
+	protected Bitmap MakeCollageFromBitmapes(SortedMap<Integer, String> photo_map,
+			int collage_size, int size_y, float coef) throws IOException {
+		
+		collage_size = photo_map.size() >= collage_size ? collage_size : photo_map.size();
+		int size_x = collage_size / size_y;
+		int image_size = (int)(612*coef); // is it always true for the instagram?
+		
+		Bitmap bg = Bitmap.createBitmap(image_size * size_x,
+				image_size * size_y, Config.ARGB_8888);
+			            
+	    Canvas comboImage = new Canvas(bg);
+	    
+	    Bitmap image;
+	    int i = 0;
+	    for (int x=0; x<size_x; x++) {
+	    	for (int y=0; y<size_y; y++) {
+	    		if (photo_map.size()-1-i >= 0) {
+					image = FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
+					i++;
+					comboImage.drawBitmap(image, size_x*x, size_y*y, null);
+	    		}
+	    	}
+	    }
+		
+	    return bg;
+	}
+	
 }
