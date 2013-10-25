@@ -79,10 +79,7 @@ public class CollageMaker {
 			Integer likes = Integer.valueOf(likes_q);
 			
 			my_photo_map.put(likes, link);
-	    }
-	    for(Map.Entry<Integer, String> entry : my_photo_map.entrySet()) {
-	        System.out.println(entry.getValue());
-	    } // outputs from smaller to bigger		
+	    }		
 	    return my_photo_map;
 	}
 	

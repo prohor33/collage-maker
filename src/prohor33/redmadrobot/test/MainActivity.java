@@ -65,11 +65,11 @@ public class MainActivity extends Activity {
 	        			 else {
 	        				 
 	        				Bitmap preview;
-	         				if (collage.getWidth() > 480) { // too big
+	         				if (collage.getWidth() > 450) { // too big
 	         					System.out.println("comress collgae to make preview");
-	         					float coef = collage.getWidth() / 480;
+	         					float coef = 450.0f / collage.getWidth();
 	         					preview = Bitmap.createScaledBitmap(collage,
-	         							(int)coef*collage.getWidth(), (int)coef*collage.getHeight(), false);
+	         							(int)(coef*collage.getWidth()), (int)(coef*collage.getHeight()), false);
 	         				}
 	         				else {
 	         					preview = collage;
@@ -81,7 +81,7 @@ public class MainActivity extends Activity {
 
 	        			 }
 	        		  }
-	        		}.execute("tom");
+	        		}.execute("jennifer");
             	
             }
         });		
@@ -118,23 +118,17 @@ public class MainActivity extends Activity {
 		iv.setId(image_view_id);
 		RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);
 		
-		System.out.println("1.0");
 		
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
 		    RelativeLayout.LayoutParams.WRAP_CONTENT,
 		    RelativeLayout.LayoutParams.WRAP_CONTENT);
 		
-		System.out.println("1.1");
-		
 		lp.addRule(RelativeLayout.CENTER_VERTICAL);
 		lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
 		
-		System.out.println("1.2");
-		
-		lp.setMargins(0, 60, 0, 0);
+		lp.setMargins(0, 90, 0, 0);
 		rl.addView(iv, lp);
 		
-		System.out.println("1.3");
 		
 		// edit text reposition
 		EditText et = (EditText) findViewById(R.id.entry);	        				
@@ -144,8 +138,7 @@ public class MainActivity extends Activity {
 		lp2 = (RelativeLayout.LayoutParams) et.getLayoutParams();		        			
 		lp2.addRule(RelativeLayout.ABOVE, image_view_id);		        			
 		et.setLayoutParams(lp2);
-		
-		System.out.println("1.4");
+			
 		
 		// create new button
 			Button bt = new Button(MainActivity.this);	        				
@@ -153,12 +146,12 @@ public class MainActivity extends Activity {
 		RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
 		    RelativeLayout.LayoutParams.WRAP_CONTENT,
 		    RelativeLayout.LayoutParams.WRAP_CONTENT);
+		
 		lp3.addRule(RelativeLayout.BELOW, image_view_id);
 		lp3.addRule(RelativeLayout.ALIGN_RIGHT);
 		lp3.setMargins(0, 10, 0, 0);       				
 		lp3.addRule(RelativeLayout.CENTER_HORIZONTAL);
 		rl.addView(bt, lp3);	
 		
-		System.out.println("1.5");
 	}
 }
