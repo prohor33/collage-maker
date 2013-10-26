@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -16,6 +18,18 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
 public class CollageMaker {
+  
+  protected enum ImageSize {
+    LARGE('8'),
+    MEDIUM('6'),
+    SMALL('5');
+    
+    private char value;
+    
+    private ImageSize(char value) {
+            this.value = value;
+    }   
+  };
 	
 	public Bitmap GimmeCollage(String user_name) throws IOException {
 		String html_code = LoadHtmlCode("http://www.instagram.com/" + user_name);
@@ -24,7 +38,7 @@ public class CollageMaker {
 	    	throw new IOException("No internet connection or wrong nickname");	    	
 	    }
 	    
-		SortedMap<Integer, String> photo_map;
+		SortedMap<Integer, List<String>> photo_map;
 		photo_map = FindAndSortAllImageLinks(html_code);
 		
 		if (photo_map.size() < 1) {
@@ -32,7 +46,7 @@ public class CollageMaker {
 	    		+ user_name + "'s page");
 	    }
 		
-		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 3, 1.0f);
+		Bitmap collage = MakeCollageFromBitmapes(photo_map, 12, 4, 1.0f, ImageSize.SMALL);
 		
 		return collage;
 	}
@@ -61,29 +75,36 @@ public class CollageMaker {
 	    return html_code.toString();		
 	}
 	
-	protected SortedMap<Integer, String> FindAndSortAllImageLinks(String html_code) {
+	protected SortedMap<Integer, List<String>> FindAndSortAllImageLinks(String html_code) {
 	    int curr_index = 0;
-	    SortedMap<Integer, String> my_photo_map = new TreeMap<Integer, String>();
+	    SortedMap<Integer, List<String>> my_photo_map = new TreeMap<Integer, List<String>>();
 	    while (true) {
 	    	int ind_link = html_code.indexOf("\"link\":\"", curr_index);
-			if (ind_link < 0)
-				break;            		    	
-	    	int ind_link_end = html_code.indexOf("\"", ind_link+8);
-	    	String link = html_code.substring(ind_link+8, ind_link_end);
-
-			int ind_likes = html_code.indexOf("\"likes\":{\"count\":", ind_link);
-			int ind_data = html_code.indexOf(",\"data\":", ind_likes);	            			
-			curr_index = ind_data;
- 			
-			String likes_q = html_code.substring(ind_likes+17, ind_data);	            			
-			Integer likes = Integer.valueOf(likes_q);
-			
-			my_photo_map.put(likes, link);
+  			if (ind_link < 0)
+  				break;            		    	
+  	    	int ind_link_end = html_code.indexOf("\"", ind_link+8);
+  	    	String link = html_code.substring(ind_link+8, ind_link_end);
+  
+  			int ind_likes = html_code.indexOf("\"likes\":{\"count\":", ind_link);
+  			int ind_data = html_code.indexOf(",\"data\":", ind_likes);	            			
+  			curr_index = ind_data;
+   			
+  			String likes_q = html_code.substring(ind_likes+17, ind_data);	            			
+  			Integer likes = Integer.valueOf(likes_q);
+  			
+  			if (my_photo_map.containsKey(likes))
+  			  my_photo_map.get(likes).add(link);
+  			else {  			   
+  			  my_photo_map.put(likes, new ArrayList<String>());
+  			  my_photo_map.get(likes).add(link);
+  			}
 	    }		
 	    return my_photo_map;
 	}
 	
-	protected Bitmap FindAndLoadImage(String link_source) throws IOException {
+	protected Bitmap FindAndLoadImage(String link_source,
+	    ImageSize image_size_level)
+	    throws IOException {
 			
 		// need to replace all \/ -> /
 		link_source = link_source.replaceAll("\\\\", "");
@@ -103,12 +124,13 @@ public class CollageMaker {
 		String image_link = html_source.substring(image_link_start,
 				image_link_end);
 		
+		StringBuilder image_link_b = new StringBuilder(image_link);
+		image_link_b.setCharAt(image_link.length()-5, image_size_level.value);
+		image_link = image_link_b.toString(); 
+		
 		System.out.println("Link: "+image_link);
 		
 		Bitmap bitmap = loadBitmap(image_link);
-		float coef = 0.5f;
-		bitmap = Bitmap.createScaledBitmap(bitmap,
-				(int)(coef*bitmap.getWidth()), (int)(coef*bitmap.getHeight()), false);
 		System.out.println(bitmap.getHeight());
 		
 		return bitmap;
@@ -120,32 +142,71 @@ public class CollageMaker {
 	    return bitmap;
 	}
 	
-	protected Bitmap MakeCollageFromBitmapes(SortedMap<Integer, String> photo_map,
-			int collage_size, int size_x, float coef) throws IOException {
+	protected Bitmap MakeCollageFromBitmapes(SortedMap<Integer, List<String>> photo_map,
+			int collage_size, int size_x, float coef, ImageSize image_size_level) throws IOException {
 		
-		collage_size = photo_map.size() >= collage_size ? collage_size : photo_map.size();
-		int size_y = collage_size / size_x;
-		int image_size = (int)(612*0.5f*coef); // is it always true for the instagram?
+	  // we should count how many photos do we have
+	  int photos_q = 0;
+	  for (int i=0; i<photo_map.size(); i++) {
+	    List<String> list = (List<String>)photo_map.values().toArray()[photo_map.size()-1-i];
+	    photos_q += list.size();  
+	  }
+	  
+		collage_size = photos_q >= collage_size ? collage_size : photos_q;
+		int size_y;
+		if (collage_size < size_x) {
+		  size_y = 1;
+		  size_x = collage_size;
+		}
+		else
+		  size_y = collage_size / size_x;
+		int im_l_s = 640;
+		switch (image_size_level) {
+		case LARGE:
+		  im_l_s = 640;
+		  break;
+		case MEDIUM:
+		  im_l_s = 306;
+		  break;
+		case SMALL:
+		  im_l_s = 150;
+		  break;
+		}
+		int image_size = (int)(im_l_s*coef);
 		
 		Bitmap bg = Bitmap.createBitmap(image_size * size_x,
 				image_size * size_y, Config.RGB_565);
 			            
-	    Canvas comboImage = new Canvas(bg);
-	    
-	    Bitmap image;
-	    int i = 0;
-	    for (int x=0; x<size_x; x++) {
-	    	for (int y=0; y<size_y; y++) {
-	    		if (photo_map.size()-1-i >= 0) {
-					image = FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
-					image = Bitmap.createScaledBitmap(image, image_size, image_size, false);
-					i++;
+    Canvas comboImage = new Canvas(bg);
+    
+    Bitmap image;
+    int i = 0;
+    int list_i = 0;
+    for (int x=0; x<size_x; x++) {
+    	for (int y=0; y<size_y; y++) {
+    	  
+    		if (photo_map.size()-1-i >= 0) {
+    		  
+    		  List<String> list = (List<String>)photo_map.values().toArray()[photo_map.size()-1-i];
+    		  
+    		  image = FindAndLoadImage(list.get(list_i), image_size_level);
+    		  list_i++;
+    		  if (list_i >= list.size()) {
+    		    list_i = 0;
+    		    i++;
+    		  }
+    		  
+					//image = FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
+					
+					image = Bitmap.createScaledBitmap(image, image_size, image_size, false);  					
+					
 					comboImage.drawBitmap(image, image_size*x, image_size*y, null);
-	    		}
-	    	}
-	    }
-		
-	    return bg;
+					
+    		}	    		
+    	}
+    }
+	
+    return bg;
 	}
 	
 }

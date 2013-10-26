@@ -112,7 +112,7 @@ public class MainActivity extends Activity {
 	private void CreateImageView (Bitmap image_preview) {
 		// create image view
 		ImageView iv = new ImageView(MainActivity.this);
-		iv.setImageBitmap(image_preview);
+		iv.setImageBitmap(image_preview);		
 		
 		int image_view_id = 91;	// random number (for simplicity)
 		iv.setId(image_view_id);
@@ -125,6 +125,7 @@ public class MainActivity extends Activity {
 		
 		lp.addRule(RelativeLayout.CENTER_VERTICAL);
 		lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+		//lp.addRule(RelativeLayout.BELOW, image_view_id);
 		
 		lp.setMargins(0, 90, 0, 0);
 		rl.addView(iv, lp);
