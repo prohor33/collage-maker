@@ -46,7 +46,7 @@ public class CollageMaker {
 	    		+ user_name + "'s page");
 	    }
 		
-		Bitmap collage = MakeCollageFromBitmapes(photo_map, 12, 4, 1.0f, ImageSize.SMALL);
+		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 3, 1.0f, ImageSize.SMALL);
 		
 		return collage;
 	}

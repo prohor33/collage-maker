@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.Menu;
@@ -110,49 +111,75 @@ public class MainActivity extends Activity {
 	}
 	
 	private void CreateImageView (Bitmap image_preview) {
-		// create image view
-		ImageView iv = new ImageView(MainActivity.this);
-		iv.setImageBitmap(image_preview);		
-		
-		int image_view_id = 91;	// random number (for simplicity)
-		iv.setId(image_view_id);
-		RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);
-		
-		
-		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-		    RelativeLayout.LayoutParams.WRAP_CONTENT,
-		    RelativeLayout.LayoutParams.WRAP_CONTENT);
-		
-		lp.addRule(RelativeLayout.CENTER_VERTICAL);
-		lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		//lp.addRule(RelativeLayout.BELOW, image_view_id);
-		
-		lp.setMargins(0, 90, 0, 0);
-		rl.addView(iv, lp);
-		
-		
-		// edit text reposition
-		EditText et = (EditText) findViewById(R.id.entry);	        				
-		RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
-			    RelativeLayout.LayoutParams.WRAP_CONTENT,
-			    RelativeLayout.LayoutParams.WRAP_CONTENT);
-		lp2 = (RelativeLayout.LayoutParams) et.getLayoutParams();		        			
-		lp2.addRule(RelativeLayout.ABOVE, image_view_id);		        			
-		et.setLayoutParams(lp2);
+	  
+	  int orientation = MainActivity.this.getResources().getConfiguration().orientation;
+	  
+    RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);	  
+    
+    // create new "Send By Email" button
+    Button bt = new Button(MainActivity.this);                  
+    bt.setText("Send By Email");
+    int button_send_email_id = 81; // random number (for simplicity)
+    bt.setId(button_send_email_id);    
+    RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
+        RelativeLayout.LayoutParams.WRAP_CONTENT,
+        RelativeLayout.LayoutParams.WRAP_CONTENT);
+    
+    lp3.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);    
+    lp3.setMargins(0, 0, 0, 20);
+    lp3.addRule(RelativeLayout.CENTER_HORIZONTAL);
+    rl.addView(bt, lp3);	  
+  	  
+    
+  	// create image view
+  	ImageView iv = new ImageView(MainActivity.this);
+  	iv.setImageBitmap(image_preview);		
+  	
+  	int image_view_id = 91;	// random number (for simplicity)
+  	iv.setId(image_view_id);
+  	
+  	RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+  	    RelativeLayout.LayoutParams.WRAP_CONTENT,
+  	    RelativeLayout.LayoutParams.WRAP_CONTENT);
+  	
+  	lp.addRule(RelativeLayout.CENTER_VERTICAL);
+  	lp.addRule(RelativeLayout.ABOVE, button_send_email_id);
+  	
+  	if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+  	  lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
+  	  lp.setMargins(0, 100, 0, 20);
+  	}
+  	else {
+      lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+      lp.setMargins(0, 20, 10, 20);
+  	}
+  	
+  	rl.addView(iv, lp);
+  	
+  	
+  	// edit text reposition
+  	EditText et = (EditText) findViewById(R.id.entry);	        				
+  	RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(
+  		    RelativeLayout.LayoutParams.WRAP_CONTENT,
+  		    RelativeLayout.LayoutParams.WRAP_CONTENT);
+  	lp2 = (RelativeLayout.LayoutParams) et.getLayoutParams();
+  	if (orientation == Configuration.ORIENTATION_PORTRAIT)
+  	  lp2.addRule(RelativeLayout.ABOVE, image_view_id);
+  	else {
+  	  lp2.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+  	  lp2.setMargins(10, 0, 0, 0);
+  	}
+  	et.setLayoutParams(lp2);
 			
 		
-		// create new button
-			Button bt = new Button(MainActivity.this);	        				
-			bt.setText("Send by email");        				
-		RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
-		    RelativeLayout.LayoutParams.WRAP_CONTENT,
-		    RelativeLayout.LayoutParams.WRAP_CONTENT);
-		
-		lp3.addRule(RelativeLayout.BELOW, image_view_id);
-		lp3.addRule(RelativeLayout.ALIGN_RIGHT);
-		lp3.setMargins(0, 10, 0, 0);       				
-		lp3.addRule(RelativeLayout.CENTER_HORIZONTAL);
-		rl.addView(bt, lp3);	
-		
 	}
+	
+  @Override
+  public void onBackPressed() {    
+    System.out.println("DemoActivity::onBackPressed()");
+    // reset view
+    current_collage_preview = null;
+    super.onBackPressed();
+  }
+  
 }
