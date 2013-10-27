@@ -1,13 +1,19 @@
 package prohor33.redmadrobot.test;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -21,9 +27,12 @@ import android.widget.RelativeLayout;
 public class MainActivity extends Activity {
 	
 	protected static Bitmap current_collage_preview;
+	protected static Bitmap current_collage;
 	protected static ProgressDialog progress_dialog;
 	protected static AsyncTask<String, Void, String> async_task;
 	protected static MainActivity main_activity;
+	protected static String nickname;
+	protected static File collage_file;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +139,9 @@ public class MainActivity extends Activity {
        					preview = collage;
        				}	        				 
        				current_collage_preview = preview;
+       				current_collage = collage;
+       				
+       				collage_file = savebitmap(collage);
        				
       				System.out.println("Start changing view...");
       				
@@ -141,6 +153,7 @@ public class MainActivity extends Activity {
         	
         }
     });		
+    
 	}
 
 	@Override
@@ -241,8 +254,35 @@ public class MainActivity extends Activity {
   	Button gmc_button = (Button) findViewById(R.id.GiveMeCollage);  
   	gmc_button.setText("Give Me Another One");
   	gmc_button.setTextSize(15);
+  	
+  	
+    final Button send_email_button = (Button) findViewById(button_send_email_id);
+    send_email_button.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+        
+          System.out.println("Trying to send email");
+          
+          Uri u = null;
+          if (collage_file == null) {
+            System.out.println("Collage file is null");
+            return;
+          }
+          u = Uri.fromFile(collage_file);
+
+          Intent emailIntent = new Intent(Intent.ACTION_SEND);
+          emailIntent.setType("image/*");
+          emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Hello...");
+          // + "\n\r" + "\n\r" +
+          // feed.get(Selectedposition).DETAIL_OBJECT.IMG_URL
+          emailIntent.putExtra(Intent.EXTRA_TEXT, "Your tsxt here");
+          emailIntent.putExtra(Intent.EXTRA_STREAM, u);
+          startActivity(Intent.createChooser(emailIntent, "Send email..."));
+          
+        }
+    });  	
   	  	
 	}
+	
 	
   @Override
   public void onBackPressed() {    
@@ -252,11 +292,35 @@ public class MainActivity extends Activity {
     super.onBackPressed();
   }
   
+  
   @Override
   public void onSaveInstanceState(Bundle savedInstanceState) {
     super.onSaveInstanceState(savedInstanceState);
     if (progress_dialog != null)
       progress_dialog.dismiss();
+  }  
+  
+  
+  private File savebitmap(Bitmap bmp) {
+    String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+    OutputStream outStream = null;
+    String temp = new String(nickname + "_collage");
+    File file = new File(extStorageDirectory, temp + ".png");
+    if (file.exists()) {
+      file.delete();
+      file = new File(extStorageDirectory, temp + ".png");
+    }
+    
+    try {
+      outStream = new FileOutputStream(file);
+      bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+      outStream.flush();
+      outStream.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+    return file;
   }  
   
 }
