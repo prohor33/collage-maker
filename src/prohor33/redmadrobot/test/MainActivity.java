@@ -77,6 +77,7 @@ public class MainActivity extends Activity {
                   new DialogInterface.OnCancelListener(){
                       @Override
                       public void onCancel(DialogInterface dialog) {
+                        System.out.println("onCancel.");
                           async_task.cancel(true);
                           progress_dialog = null;
                       }
@@ -84,6 +85,7 @@ public class MainActivity extends Activity {
               );
               
             }
+            
       		
       		  @Override
       		  protected String doInBackground(String... urlStr){        			  
@@ -101,6 +103,7 @@ public class MainActivity extends Activity {
       			return exception_mess;
       		  }         
 
+      		  
       		  @Override
       		  protected void onPostExecute(String result){
       		    // do stuff on UI thread with the html
@@ -130,7 +133,7 @@ public class MainActivity extends Activity {
 
       			 }
       		  }
-      		}.execute("jennifer");
+      		}.execute("mike");
         	
         }
     });		
@@ -234,7 +237,7 @@ public class MainActivity extends Activity {
   	Button gmc_button = (Button) findViewById(R.id.GiveMeCollage);  
   	gmc_button.setText("Give Me Another One");
   	gmc_button.setTextSize(15);
-  	
+  	  	
 	}
 	
   @Override
@@ -244,5 +247,12 @@ public class MainActivity extends Activity {
     current_collage_preview = null;    
     super.onBackPressed();
   }
+  
+  @Override
+  public void onSaveInstanceState(Bundle savedInstanceState) {
+    super.onSaveInstanceState(savedInstanceState);
+    if (progress_dialog != null)
+      progress_dialog.dismiss();
+  }  
   
 }
