@@ -12,12 +12,56 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 
 public class CollageMaker {
+  
+  public CollageMaker(int max_collage_size,
+      ProgressDialog progress_dialog) {
+    
+    this.max_collage_size = max_collage_size;
+    this.progress_dialog = progress_dialog; 
+    
+  }
+  
+  private ProgressDialog progress_dialog;
+  private int max_collage_size;
+  
+  protected enum LoadingPercent {
+    LoadHtmlCodeFunc(25),
+    FindAndSortAllImageLinksFunc(10),
+    MakeCollageFromBitmapesFunc(100-25-10);
+    
+    private int value;
+    
+    private LoadingPercent(int value) {
+            this.value = value;
+    }   
+  };
+  
+  protected void SetProgress(LoadingPercent func, float percent) {
+    int progress = 0;
+    
+    switch (func) {
+    case MakeCollageFromBitmapesFunc:
+      progress += (int)(LoadingPercent.FindAndSortAllImageLinksFunc.value*percent);
+      percent = 1.0f;
+    case FindAndSortAllImageLinksFunc:
+      progress += (int)(LoadingPercent.FindAndSortAllImageLinksFunc.value*percent);
+      percent = 1.0f;
+    case LoadHtmlCodeFunc:
+      progress += (int)(LoadingPercent.LoadHtmlCodeFunc.value*percent);
+      percent = 1.0f;
+      break;
+    }
+    
+    progress_dialog.setProgress(progress);    
+  }
   
   protected enum ImageSize {
     LARGE('8'),
@@ -31,6 +75,7 @@ public class CollageMaker {
     }   
   };
 	
+  
 	public Bitmap GimmeCollage(String user_name) throws IOException {
 		String html_code = LoadHtmlCode("http://www.instagram.com/" + user_name);
 	    
@@ -46,10 +91,28 @@ public class CollageMaker {
 	    		+ user_name + "'s page");
 	    }
 		
-		Bitmap collage = MakeCollageFromBitmapes(photo_map, 6, 3, 1.0f, ImageSize.SMALL);
+		
+		int collage_size_x;
+		switch (max_collage_size) {
+    case 20:	
+    case 15:
+      collage_size_x = 5;      
+      break;		
+		case 12:
+      collage_size_x = 4;
+      break;
+		case 9:
+		case 6:		  
+		default:
+		  collage_size_x = 3;		  
+		  break;	    
+		}
+		
+		Bitmap collage = MakeCollageFromBitmapes(photo_map, max_collage_size, collage_size_x, 1.0f);
 		
 		return collage;
 	}
+	
 	
 	protected String LoadHtmlCode(String link) throws IOException {
 	    String html_code = new String();
@@ -61,13 +124,19 @@ public class CollageMaker {
 	    	connection.setRequestProperty( "User-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64)" +
 	    			" AppleWebKit/537.4 (KHTML, like Gecko) Chrome/22.0.1229.94 Safari/537.4" );
 	    	
+	    	//SetProgress(LoadingPercent.LoadHtmlCodeFunc, 0.1f);
+	    	
 	    	BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
+	    	//SetProgress(LoadingPercent.LoadHtmlCodeFunc, 0.8f);
+	    	
 	    	String inputLine;
 
 	    	while ((inputLine = in.readLine()) != null)
 	    		html_code += inputLine;
 
+	    	//SetProgress(LoadingPercent.LoadHtmlCodeFunc, 0.9f);
+	    	
 	    	in.close();
 	    } catch (Exception e) {
 	    	throw new IOException(e.getMessage());	        
@@ -79,6 +148,9 @@ public class CollageMaker {
 	    int curr_index = 0;
 	    SortedMap<Integer, List<String>> my_photo_map = new TreeMap<Integer, List<String>>();
 	    while (true) {
+	      
+	      //SetProgress(LoadingPercent.FindAndSortAllImageLinksFunc, (float)curr_index/html_code.length());
+	      
 	    	int ind_link = html_code.indexOf("\"link\":\"", curr_index);
   			if (ind_link < 0)
   				break;            		    	
@@ -143,7 +215,7 @@ public class CollageMaker {
 	}
 	
 	protected Bitmap MakeCollageFromBitmapes(SortedMap<Integer, List<String>> photo_map,
-			int collage_size, int size_x, float coef, ImageSize image_size_level) throws IOException {
+			int collage_size, int size_x, float coef) throws IOException {
 		
 	  // we should count how many photos do we have
 	  int photos_q = 0;
@@ -153,6 +225,7 @@ public class CollageMaker {
 	  }
 	  
 		collage_size = photos_q >= collage_size ? collage_size : photos_q;
+		
 		int size_y;
 		if (collage_size < size_x) {
 		  size_y = 1;
@@ -160,6 +233,14 @@ public class CollageMaker {
 		}
 		else
 		  size_y = collage_size / size_x;
+		
+		ImageSize image_size_level = ImageSize.SMALL;
+		
+    if (collage_size <= 9)
+      image_size_level = ImageSize.MEDIUM;		
+		if (collage_size <= 3)
+		  image_size_level = ImageSize.LARGE;
+				
 		int im_l_s = 640;
 		switch (image_size_level) {
 		case LARGE:
@@ -182,6 +263,7 @@ public class CollageMaker {
     Bitmap image;
     int i = 0;
     int list_i = 0;
+    int photos_i = 0;
     for (int x=0; x<size_x; x++) {
     	for (int y=0; y<size_y; y++) {
     	  
@@ -191,16 +273,18 @@ public class CollageMaker {
     		  
     		  image = FindAndLoadImage(list.get(list_i), image_size_level);
     		  list_i++;
+    		  photos_i++;
     		  if (list_i >= list.size()) {
     		    list_i = 0;
     		    i++;
     		  }
     		  
-					//image = FindAndLoadImage(photo_map.values().toArray()[photo_map.size()-1-i].toString());
-					
 					image = Bitmap.createScaledBitmap(image, image_size, image_size, false);  					
 					
 					comboImage.drawBitmap(image, image_size*x, image_size*y, null);
+					
+					//SetProgress(LoadingPercent.MakeCollageFromBitmapesFunc, (float)photos_i/collage_size);
+					progress_dialog.setProgress(photos_i);
 					
     		}	    		
     	}

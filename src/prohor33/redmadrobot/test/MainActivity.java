@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,6 +34,7 @@ public class MainActivity extends Activity {
 	protected static MainActivity main_activity;
 	protected static String nickname;
 	protected static File collage_file;
+	protected int collage_size;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,39 +50,28 @@ public class MainActivity extends Activity {
 		}
 		
 		if (progress_dialog != null) {
-      progress_dialog = ProgressDialog.show(
-          MainActivity.this,
-          "In progress",
-          "Loading",
-          true,
-          true,
-          new DialogInterface.OnCancelListener(){
-              @Override
-              public void onCancel(DialogInterface dialog) {
-                  async_task.cancel(true);
-                  progress_dialog = null;
-              }
-          }
-      );		  
+      progress_dialog = onCreateProgressDialog();	  
 		}
 				
     final Button button = (Button) findViewById(R.id.GiveMeCollage);
     button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
           
-          EditText edit_nickname = (EditText) findViewById(R.id.entry);  
-          nickname = edit_nickname.getText().toString();
-          
-          if (nickname.isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle("Field is empty");
-            builder.setMessage("Please, type in nickname in the blank field");
-            builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.show();
-            return;
-          }
-          
-        	System.out.println("GiveMeCollage button click");
+        EditText edit_nickname = (EditText) findViewById(R.id.entry);  
+        nickname = edit_nickname.getText().toString();
+        
+        if (nickname.isEmpty()) {
+          AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+          builder.setTitle("Field is empty");
+          builder.setMessage("Please, type in nickname in the blank field");
+          builder.setPositiveButton("OK", null);
+          builder.show();
+          return;
+        }
+        
+        collage_size = 6;
+        
+      	System.out.println("GiveMeCollage button click");
         	         
 
 
@@ -93,21 +84,8 @@ public class MainActivity extends Activity {
               
               async_task = this;
               
-              progress_dialog = ProgressDialog.show(
-                  MainActivity.this,
-                  "In progress",
-                  "Loading",
-                  true,
-                  true,
-                  new DialogInterface.OnCancelListener(){
-                      @Override
-                      public void onCancel(DialogInterface dialog) {
-                        System.out.println("onCancel.");
-                          async_task.cancel(true);
-                          progress_dialog = null;
-                      }
-                  }
-              );
+              progress_dialog = onCreateProgressDialog();
+              progress_dialog.setMax(collage_size);
               
             }
             
@@ -118,7 +96,8 @@ public class MainActivity extends Activity {
       		          		    
       		    
       			String exception_mess = new String();
-      			CollageMaker collage_maker = new CollageMaker();
+      			CollageMaker collage_maker = new CollageMaker(collage_size, progress_dialog);
+      			
       			try {
       				collage = collage_maker.GimmeCollage(urlStr[0]);	        				
      				
@@ -141,26 +120,26 @@ public class MainActivity extends Activity {
       			 }
       			 else {
       				 
-      				Bitmap preview;
-       				if (collage.getWidth() > 450) { // too big
-       					System.out.println("comress collgae to make preview");
-       					float coef = 450.0f / collage.getWidth();
-       					preview = Bitmap.createScaledBitmap(collage,
+      			   Bitmap preview;
+       				 if (collage.getWidth() > 450) { // too big
+       					 System.out.println("comress collgae to make preview");
+       					 float coef = 450.0f / collage.getWidth();
+       					 preview = Bitmap.createScaledBitmap(collage,
        							(int)(coef*collage.getWidth()), (int)(coef*collage.getHeight()), false);
-       				}
-       				else {
-       					preview = collage;
-       				}	        				 
-       				current_collage_preview = preview;
-       				current_collage = collage;
+       				 }
+       				 else
+       					 preview = collage;      				 
+       				 
+       				 current_collage_preview = preview;
+       				 current_collage = collage;
        				
-       				collage_file = savebitmap(collage);
+       				 collage_file = savebitmap(collage);
        				
-      				System.out.println("Start changing view...");
+      				 System.out.println("Start changing view...");
       				
-      				main_activity.CreateImageView(preview);
+      				 main_activity.CreateImageView(preview);
 
-      			 }
+      			  }
       		  }
       		}.execute(nickname);
         	
@@ -223,7 +202,7 @@ public class MainActivity extends Activity {
     
   	// create image view
   	ImageView iv = new ImageView(MainActivity.this);
-  	iv.setImageBitmap(image_preview);		
+  	iv.setImageBitmap(image_preview);  	
   	 	
   	iv.setId(image_view_id);
   	
@@ -333,6 +312,22 @@ public class MainActivity extends Activity {
       return null;
     }
     return file;
+  }
+  
+  
+  /**
+   * Showing Dialog
+   * */  
+  protected ProgressDialog onCreateProgressDialog() {
+    
+    ProgressDialog pDialog = new ProgressDialog(this);
+    pDialog.setMessage("Downloading file. Please wait...");
+    pDialog.setIndeterminate(false);
+    pDialog.setMax(100);
+    pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+    pDialog.setCancelable(true);
+    pDialog.show();
+    return pDialog;
   }  
   
 }
