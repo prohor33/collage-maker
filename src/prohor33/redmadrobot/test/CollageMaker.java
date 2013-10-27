@@ -22,15 +22,14 @@ import android.graphics.Canvas;
 public class CollageMaker {
   
   public CollageMaker(int max_collage_size,
-      ProgressDialog progress_dialog) {
+      MakeCollageTask make_collage_task) {
     
     this.max_collage_size = max_collage_size;
-    this.progress_dialog = progress_dialog; 
-    
+    this.make_collage_task = make_collage_task;
   }
   
-  private ProgressDialog progress_dialog;
   private int max_collage_size;
+  private MakeCollageTask make_collage_task;
   
   protected enum LoadingPercent {
     LoadHtmlCodeFunc(25),
@@ -60,7 +59,7 @@ public class CollageMaker {
       break;
     }
     
-    progress_dialog.setProgress(progress);    
+    make_collage_task.main_activity.progress_dialog.setProgress(progress);    
   }
   
   protected enum ImageSize {
@@ -92,21 +91,16 @@ public class CollageMaker {
 	    }
 		
 		
-		int collage_size_x;
-		switch (max_collage_size) {
-    case 20:	
-    case 15:
-      collage_size_x = 5;      
-      break;		
-		case 12:
+		int collage_size_x = 3;
+
+    if (max_collage_size >= 6)
+      collage_size_x = 3;
+    if (max_collage_size >= 10)
       collage_size_x = 4;
-      break;
-		case 9:
-		case 6:		  
-		default:
-		  collage_size_x = 3;		  
-		  break;	    
-		}
+    if (max_collage_size >= 20)
+      collage_size_x = 5;
+    if (max_collage_size >= 30)
+      collage_size_x = (int)(2.0f/3.0f*max_collage_size);     
 		
 		Bitmap collage = MakeCollageFromBitmapes(photo_map, max_collage_size, collage_size_x, 1.0f);
 		
@@ -284,7 +278,7 @@ public class CollageMaker {
 					comboImage.drawBitmap(image, image_size*x, image_size*y, null);
 					
 					//SetProgress(LoadingPercent.MakeCollageFromBitmapesFunc, (float)photos_i/collage_size);
-					progress_dialog.setProgress(photos_i);
+					make_collage_task.main_activity.progress_dialog.setProgress(photos_i);
 					
     		}	    		
     	}

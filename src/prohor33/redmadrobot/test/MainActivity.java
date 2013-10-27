@@ -30,11 +30,11 @@ public class MainActivity extends Activity {
 	protected static Bitmap current_collage_preview;
 	protected static Bitmap current_collage;
 	protected static ProgressDialog progress_dialog;
-	protected static AsyncTask<String, Void, String> async_task;
-	protected static MainActivity main_activity;
+	protected static AsyncTask<String, Void, String> async_task;	
 	protected static String nickname;
 	protected static File collage_file;
-	protected int collage_size;
+	protected static MakeCollageTask make_collage_task;
+	protected static int collage_size;	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,8 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		System.out.println("Hey");
 		
-		main_activity = this;
+		if (make_collage_task != null)
+		  make_collage_task.main_activity = this;
 		
 		if (current_collage_preview != null) {
 			System.out.println("Create image view!");
@@ -50,9 +51,14 @@ public class MainActivity extends Activity {
 		}
 		
 		if (progress_dialog != null) {
-      progress_dialog = onCreateProgressDialog();	  
+		  int p = progress_dialog.getProgress();
+      progress_dialog = onCreateProgressDialog();
+      progress_dialog.setProgress(p);
+      progress_dialog.setMax(collage_size);
 		}
-				
+		
+		collage_size = 12;
+		
     final Button button = (Button) findViewById(R.id.GiveMeCollage);
     button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
@@ -68,80 +74,11 @@ public class MainActivity extends Activity {
           builder.show();
           return;
         }
-        
-        collage_size = 6;
-        
+                
       	System.out.println("GiveMeCollage button click");
         	         
-
-
-      	new AsyncTask<String, Void, String>(){
-      		
-      		Bitmap collage;
-      		      		
-            @Override
-            protected void onPreExecute(){
-              
-              async_task = this;
-              
-              progress_dialog = onCreateProgressDialog();
-              progress_dialog.setMax(collage_size);
-              
-            }
-            
-      		
-      		  @Override
-      		  protected String doInBackground(String... urlStr){        			  
-      		    // do stuff on non-UI thread
-      		          		    
-      		    
-      			String exception_mess = new String();
-      			CollageMaker collage_maker = new CollageMaker(collage_size, progress_dialog);
-      			
-      			try {
-      				collage = collage_maker.GimmeCollage(urlStr[0]);	        				
-     				
-      			} catch(IOException e) {
-      				exception_mess = e.getMessage();
-      			}
-      			return exception_mess;
-      		  }         
-
-      		  
-      		  @Override
-      		  protected void onPostExecute(String result){
-      		    // do stuff on UI thread with the html
-
-              progress_dialog.dismiss();
-              progress_dialog = null;      		    
-      		    
-      			 if (result.length() != 0) {
-      				 messageBox("Internet Connection Problem", result);
-      			 }
-      			 else {
-      				 
-      			   Bitmap preview;
-       				 if (collage.getWidth() > 450) { // too big
-       					 System.out.println("comress collgae to make preview");
-       					 float coef = 450.0f / collage.getWidth();
-       					 preview = Bitmap.createScaledBitmap(collage,
-       							(int)(coef*collage.getWidth()), (int)(coef*collage.getHeight()), false);
-       				 }
-       				 else
-       					 preview = collage;      				 
-       				 
-       				 current_collage_preview = preview;
-       				 current_collage = collage;
-       				
-       				 collage_file = savebitmap(collage);
-       				
-      				 System.out.println("Start changing view...");
-      				
-      				 main_activity.CreateImageView(preview);
-
-      			  }
-      		  }
-      		}.execute(nickname);
+      	make_collage_task = new MakeCollageTask(MainActivity.this);
+      	make_collage_task.execute(nickname);
         	
         }
     });
@@ -158,7 +95,7 @@ public class MainActivity extends Activity {
 	//*********************************************************
 	//generic dialog, takes in the method name and error message
 	//*********************************************************	
-	private void messageBox(String method, String message)
+	public void messageBox(String method, String message)
 	{
 	    Log.d("EXCEPTION: " + method,  message);
 
@@ -170,7 +107,7 @@ public class MainActivity extends Activity {
 	    messageBox.show();
 	}
 	
-	private void CreateImageView (Bitmap image_preview) {
+	void CreateImageView (Bitmap image_preview) {
 	  
 	  int orientation = MainActivity.this.getResources().getConfiguration().orientation;
 	  
@@ -292,7 +229,7 @@ public class MainActivity extends Activity {
   }  
   
   
-  private File savebitmap(Bitmap bmp) {
+  File savebitmap(Bitmap bmp) {
     String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
     OutputStream outStream = null;
     String temp = new String(nickname + "_collage");
@@ -321,12 +258,22 @@ public class MainActivity extends Activity {
   protected ProgressDialog onCreateProgressDialog() {
     
     ProgressDialog pDialog = new ProgressDialog(this);
-    pDialog.setMessage("Downloading file. Please wait...");
+    pDialog.setMessage("Downloading images...");
     pDialog.setIndeterminate(false);
     pDialog.setMax(100);
     pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     pDialog.setCancelable(true);
     pDialog.show();
+    pDialog.setOnCancelListener(
+        new DialogInterface.OnCancelListener(){
+            @Override
+            public void onCancel(DialogInterface dialog) {
+              System.out.println("onCancel");
+                async_task.cancel(true);
+                progress_dialog = null;
+            }
+        }
+    );
     return pDialog;
   }  
   
