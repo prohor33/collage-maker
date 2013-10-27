@@ -23,12 +23,15 @@ public class MainActivity extends Activity {
 	protected static Bitmap current_collage_preview;
 	protected static ProgressDialog progress_dialog;
 	protected static AsyncTask<String, Void, String> async_task;
+	protected static MainActivity main_activity;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		System.out.println("Hey");
+		
+		main_activity = this;
 		
 		if (current_collage_preview != null) {
 			System.out.println("Create image view!");
@@ -55,7 +58,7 @@ public class MainActivity extends Activity {
     final Button button = (Button) findViewById(R.id.GiveMeCollage);
     button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
-        	System.out.println("button1 click");
+        	System.out.println("GiveMeCollage button click");
         	         
 
 
@@ -129,7 +132,8 @@ public class MainActivity extends Activity {
        				current_collage_preview = preview;
        				
       				System.out.println("Start changing view...");
-      				CreateImageView(preview);
+      				
+      				main_activity.CreateImageView(preview);
 
       			 }
       		  }
