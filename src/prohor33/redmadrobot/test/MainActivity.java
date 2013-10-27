@@ -67,6 +67,19 @@ public class MainActivity extends Activity {
     final Button button = (Button) findViewById(R.id.GiveMeCollage);
     button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
+          
+          EditText edit_nickname = (EditText) findViewById(R.id.entry);  
+          nickname = edit_nickname.getText().toString();
+          
+          if (nickname.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Field is empty");
+            builder.setMessage("Please, type in nickname in the blank field");
+            builder.setPositiveButton("OK", null);
+            AlertDialog dialog = builder.show();
+            return;
+          }
+          
         	System.out.println("GiveMeCollage button click");
         	         
 
@@ -149,10 +162,10 @@ public class MainActivity extends Activity {
 
       			 }
       		  }
-      		}.execute("mike");
+      		}.execute(nickname);
         	
         }
-    });		
+    });
     
 	}
 
@@ -188,7 +201,7 @@ public class MainActivity extends Activity {
     
     // create new "Send By Email" button
     Button bt = new Button(MainActivity.this);                  
-    bt.setText("Send By Email");
+    bt.setText("Share With Friends");
     int button_send_email_id = 81; // random number (for simplicity)
     bt.setId(button_send_email_id);    
     RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
@@ -271,12 +284,11 @@ public class MainActivity extends Activity {
 
           Intent emailIntent = new Intent(Intent.ACTION_SEND);
           emailIntent.setType("image/*");
-          emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Hello...");
-          // + "\n\r" + "\n\r" +
-          // feed.get(Selectedposition).DETAIL_OBJECT.IMG_URL
-          emailIntent.putExtra(Intent.EXTRA_TEXT, "Your tsxt here");
+          emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Photo Collage For You");
+          emailIntent.putExtra(Intent.EXTRA_TEXT, "Hi, " + nickname + 
+              "! Here I have tiny present for you! =) (look at the attachments)");
           emailIntent.putExtra(Intent.EXTRA_STREAM, u);
-          startActivity(Intent.createChooser(emailIntent, "Send email..."));
+          startActivity(Intent.createChooser(emailIntent, "Share with friends..."));
           
         }
     });  	
