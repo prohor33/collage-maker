@@ -20,7 +20,7 @@ public class MakeCollageTask extends AsyncTask<String, Void, String> {
     main_activity.async_task = this;
     
     main_activity.progress_dialog = main_activity.onCreateProgressDialog();
-    main_activity.progress_dialog.setMax(main_activity.collage_size);
+    main_activity.progress_dialog.setMax(main_activity.images_quantity.value);
     
   }
   
@@ -30,7 +30,7 @@ public class MakeCollageTask extends AsyncTask<String, Void, String> {
       // do stuff on non-UI thread
       
     String exception_mess = new String();
-    CollageMaker collage_maker = new CollageMaker(main_activity.collage_size, this);
+    CollageMaker collage_maker = new CollageMaker(main_activity.images_quantity.value, this);
     
     try {
       collage = collage_maker.GimmeCollage(urlStr[0]);                  

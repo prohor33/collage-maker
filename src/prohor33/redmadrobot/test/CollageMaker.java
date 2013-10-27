@@ -99,8 +99,10 @@ public class CollageMaker {
       collage_size_x = 4;
     if (max_collage_size >= 20)
       collage_size_x = 5;
-    if (max_collage_size >= 30)
-      collage_size_x = (int)(2.0f/3.0f*max_collage_size);     
+    if (max_collage_size >= 40)
+      collage_size_x = 8;
+    if (max_collage_size >= 100)
+      collage_size_x = 10;    
 		
 		Bitmap collage = MakeCollageFromBitmapes(photo_map, max_collage_size, collage_size_x, 1.0f);
 		
