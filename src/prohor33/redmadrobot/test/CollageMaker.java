@@ -28,6 +28,18 @@ public class CollageMaker {
     this.make_collage_task = make_collage_task;
   }
   
+  class NoImagesSuchABigSize extends Exception
+  {
+        //Parameterless Constructor
+        public NoImagesSuchABigSize() {}
+
+        //Constructor that accepts a message
+        public NoImagesSuchABigSize(String message)
+        {
+           super(message);
+        }
+   }
+  
   private int max_collage_size;
   private MakeCollageTask make_collage_task;
   
@@ -63,6 +75,7 @@ public class CollageMaker {
   }
   
   protected enum ImageSize {
+    UNDEF('0'),
     LARGE('8'),
     MEDIUM('6'),
     SMALL('5');
@@ -102,9 +115,27 @@ public class CollageMaker {
     if (max_collage_size >= 40)
       collage_size_x = 8;
     if (max_collage_size >= 100)
-      collage_size_x = 10;    
-		
-		Bitmap collage = MakeCollageFromBitmapes(photo_map, max_collage_size, collage_size_x, 1.0f);
+      collage_size_x = 10;
+    
+    Bitmap collage = null;
+    ImageSize image_size = ImageSize.UNDEF;
+    
+    boolean exception_occure = false;
+    while (true) {
+      try {
+        collage = MakeCollageFromBitmapes(photo_map,
+            max_collage_size, collage_size_x, ImageSize.UNDEF);
+      } catch(NoImagesSuchABigSize e) {
+        exception_occure = true;
+        if (image_size == ImageSize.MEDIUM)
+          image_size = ImageSize.SMALL;        
+        if (image_size == ImageSize.UNDEF)
+          image_size = ImageSize.MEDIUM;
+      }
+      
+      if (!exception_occure)
+        break;
+    }
 		
 		return collage;
 	}
@@ -172,7 +203,7 @@ public class CollageMaker {
 	
 	protected Bitmap FindAndLoadImage(String link_source,
 	    ImageSize image_size_level)
-	    throws IOException {
+	    throws IOException, NoImagesSuchABigSize {
 			
 		// need to replace all \/ -> /
 		link_source = link_source.replaceAll("\\\\", "");
@@ -192,14 +223,27 @@ public class CollageMaker {
 		String image_link = html_source.substring(image_link_start,
 				image_link_end);
 		
+		Bitmap bitmap = null;
+		
 		StringBuilder image_link_b = new StringBuilder(image_link);
+		
 		image_link_b.setCharAt(image_link.length()-5, image_size_level.value);
 		image_link = image_link_b.toString(); 
 		
 		System.out.println("Link: "+image_link);
 		
-		Bitmap bitmap = loadBitmap(image_link);
-		System.out.println(bitmap.getHeight());
+		boolean exception_occure = false;
+		try {
+		  bitmap = loadBitmap(image_link);
+		} catch(IOException e) {
+      if (image_size_level != ImageSize.SMALL &&
+          (e.getMessage().contains("8") || e.getMessage().contains("6"))) {
+        throw new NoImagesSuchABigSize();        
+      }  		  
+      else {
+        throw e;
+      }
+		}
 		
 		return bitmap;
 	}
@@ -211,7 +255,7 @@ public class CollageMaker {
 	}
 	
 	protected Bitmap MakeCollageFromBitmapes(SortedMap<Integer, List<String>> photo_map,
-			int collage_size, int size_x, float coef) throws IOException {
+			int collage_size, int size_x, ImageSize image_size_level) throws IOException, NoImagesSuchABigSize {
 		
 	  // we should count how many photos do we have
 	  int photos_q = 0;
@@ -230,26 +274,27 @@ public class CollageMaker {
 		else
 		  size_y = collage_size / size_x;
 		
-		ImageSize image_size_level = ImageSize.SMALL;
-		
-    if (collage_size <= 9)
-      image_size_level = ImageSize.MEDIUM;		
-		if (collage_size <= 3)
-		  image_size_level = ImageSize.LARGE;
+		if (image_size_level == ImageSize.UNDEF) {
+  		image_size_level = ImageSize.SMALL;
+  		
+      if (collage_size <= 9)
+        image_size_level = ImageSize.MEDIUM;		
+  		if (collage_size <= 3)
+  		  image_size_level = ImageSize.LARGE;
+		}
 				
-		int im_l_s = 640;
+		int image_size = 640;
 		switch (image_size_level) {
 		case LARGE:
-		  im_l_s = 640;
+		  image_size = 640;
 		  break;
 		case MEDIUM:
-		  im_l_s = 306;
+		  image_size = 306;
 		  break;
 		case SMALL:
-		  im_l_s = 150;
+		  image_size = 150;
 		  break;
-		}
-		int image_size = (int)(im_l_s*coef);
+		}		
 		
 		Bitmap bg = Bitmap.createBitmap(image_size * size_x,
 				image_size * size_y, Config.RGB_565);
@@ -275,8 +320,6 @@ public class CollageMaker {
     		    i++;
     		  }
     		  
-					image = Bitmap.createScaledBitmap(image, image_size, image_size, false);  					
-					
 					comboImage.drawBitmap(image, image_size*x, image_size*y, null);
 					
 					//SetProgress(LoadingPercent.MakeCollageFromBitmapesFunc, (float)photos_i/collage_size);

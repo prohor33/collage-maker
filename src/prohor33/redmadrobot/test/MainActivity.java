@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
 	protected static String nickname;
 	protected static File collage_file;
 	protected static MakeCollageTask make_collage_task;	
-	protected static ImagesQuantity images_quantity;
+	protected static ImagesQuantity images_quantity;	
 	
   protected enum ImagesQuantity {
     Im_3(3),
@@ -127,8 +127,8 @@ public class MainActivity extends Activity {
         	         
       	make_collage_task = new MakeCollageTask(MainActivity.this);
       	make_collage_task.execute(nickname);
-        	
-        }
+     	
+      }
     });
     
 	}
@@ -145,11 +145,9 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
     //respond to menu item selection
 	  switch (item.getItemId()) {
-      case R.id.action_settings:
+      case R.id.action_settings:      
       
-      
-      onCreateAlertDialog().show();
-        
+      onCreateAlertDialog().show();        
         
       return true;
       default:
@@ -169,8 +167,8 @@ public class MainActivity extends Activity {
         ImagesQuantity.Im_9.value.toString()+" images",
         ImagesQuantity.Im_12.value.toString()+" images",
         ImagesQuantity.Im_20.value.toString()+" images",
-        ImagesQuantity.Im_40.value.toString()+" images",
-        ImagesQuantity.Im_100.value.toString()+" images",
+/*        ImagesQuantity.Im_40.value.toString()+" images",
+        ImagesQuantity.Im_100.value.toString()+" images",*/
         };
     
     
@@ -219,11 +217,16 @@ public class MainActivity extends Activity {
     RelativeLayout rl = (RelativeLayout) findViewById(R.id.RelativeLayout01);
     
     int image_view_id = 91; // random number (for simplicity)
+    int button_send_email_id = 81; // random number (for simplicity)
     
     // create new "Send By Email" button
-    Button bt = new Button(MainActivity.this);                  
+    Button bt = (Button)rl.findViewById(button_send_email_id);
+    if (bt != null)
+      rl.removeView(bt);    
+    
+    bt = new Button(MainActivity.this);                  
     bt.setText("Share With Friends");
-    int button_send_email_id = 81; // random number (for simplicity)
+    
     bt.setId(button_send_email_id);    
     RelativeLayout.LayoutParams lp3 = new RelativeLayout.LayoutParams(
         RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -243,10 +246,14 @@ public class MainActivity extends Activity {
   	  
     
   	// create image view
-  	ImageView iv = new ImageView(MainActivity.this);
-  	iv.setImageBitmap(image_preview);  	
+    ImageView iv = (ImageView)rl.findViewById(image_view_id);
+    if (iv != null)
+      rl.removeView(iv);
+      
+    iv = new ImageView(MainActivity.this);
+    iv.setImageBitmap(image_preview);  	
   	 	
-  	iv.setId(image_view_id);
+    iv.setId(image_view_id);
   	
   	RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
   	    RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -290,7 +297,8 @@ public class MainActivity extends Activity {
   	gmc_button.setTextSize(15);
   	
   	
-    final Button send_email_button = (Button) findViewById(button_send_email_id);
+  	// set OnClick listener for "Send By Email" button
+    Button send_email_button = (Button) findViewById(button_send_email_id);
     send_email_button.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
         
