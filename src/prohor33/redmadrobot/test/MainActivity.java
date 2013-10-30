@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,47 +42,20 @@ public class MainActivity extends Activity {
 	protected static ImagesQuantity images_quantity;	
 	
   protected enum ImagesQuantity {
-    Im_3(3),
-    Im_6(6),
-    Im_9(9),
-    Im_12(12),    
-    Im_20(20),
-    Im_40(40),
-    Im_100(100);
-        
-    public Integer value;
+    Im_3(0, 3),
+    Im_6(1, 6),
+    Im_9(2, 9),
+    Im_12(3, 12),    
+    Im_20(4, 20),
+    Im_40(5, 40),
+    Im_100(6, 100);
     
-    private int GetIndex() {
-      // so stupid =(
-      // TODO: make it right way      
-      switch(this) {
-      case Im_3: return 0;
-      case Im_6: return 1;
-      case Im_9: return 2;
-      case Im_12: return 3;
-      case Im_20: return 4;
-      case Im_40: return 5;
-      case Im_100: return 6;        
-      }
-      return -1;
-    }
+    public Integer index;
+    public Integer value;    
     
-    private static ImagesQuantity GetByIndex(int index) {
-      // TODO: make it right way
-      switch(index) {
-      case 0: return Im_3;
-      case 1: return Im_6;
-      case 2: return Im_9;
-      case 3: return Im_12;
-      case 4: return Im_20;
-      case 5: return Im_40;
-      case 6: return Im_100;        
-      }
-      return Im_3;
-    }
-    
-    private ImagesQuantity(int value) {
-            this.value = value;
+    private ImagesQuantity(int index, int value) {
+      this.index = index;      
+      this.value = value;            
     }   
   };
 	
@@ -88,18 +63,17 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		System.out.println("Hey");
-		
+				
 		if (make_collage_task != null)
 		  make_collage_task.main_activity = this;
 		
-		if (current_collage_preview != null) {
-			System.out.println("Create image view!");
+		if (current_collage_preview != null)		  
 			CreateImageView(current_collage_preview);
-		}
-		
+				
 		if (progress_dialog != null) {
+		  
 		  int p = progress_dialog.getProgress();
+		  
       progress_dialog = onCreateProgressDialog();
       progress_dialog.setMax(images_quantity.value);
       progress_dialog.setProgress(p);      
@@ -109,7 +83,9 @@ public class MainActivity extends Activity {
 		  images_quantity = ImagesQuantity.Im_12;		
 		
     final Button button = (Button) findViewById(R.id.GiveMeCollage);
+    
     button.setOnClickListener(new View.OnClickListener() {
+      
         public void onClick(View v) {
           
         EditText edit_nickname = (EditText) findViewById(R.id.entry);  
@@ -128,10 +104,12 @@ public class MainActivity extends Activity {
         
       	if (make_collage_task != null && !make_collage_task.isCancelled())
       	  make_collage_task.cancel(true);
+      	
       	make_collage_task = new MakeCollageTask(MainActivity.this);
       	make_collage_task.execute(nickname);
      	
       }
+        
     });
     
 	}
@@ -147,6 +125,7 @@ public class MainActivity extends Activity {
 	
 	public boolean onOptionsItemSelected(MenuItem item) {
     //respond to menu item selection
+	  
 	  switch (item.getItemId()) {
       case R.id.action_settings:      
       
@@ -160,24 +139,22 @@ public class MainActivity extends Activity {
 	
 
   /**
-   * Showing Alert Dialog
+   * Showing Settings Dialog
    * */  
   protected AlertDialog onCreateAlertDialog() {
   
-    final CharSequence[] colors_radio={
-        ImagesQuantity.Im_3.value.toString()+" images",
-        ImagesQuantity.Im_6.value.toString()+" images",
-        ImagesQuantity.Im_9.value.toString()+" images",
-        ImagesQuantity.Im_12.value.toString()+" images",
-        ImagesQuantity.Im_20.value.toString()+" images",
-        ImagesQuantity.Im_40.value.toString()+" images",
-        ImagesQuantity.Im_100.value.toString()+" images",
-        };
+    List<String> listItems = new ArrayList<String>();
+
+    int num = 5;    
+    for (int i=0; i<num; i++) {
+      listItems.add(ImagesQuantity.values()[i].value.toString()+" images");
+    }
     
+    final CharSequence[] colors_radio = listItems.toArray(new CharSequence[listItems.size()]);
     
     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
     .setTitle("Collage size")
-    .setSingleChoiceItems(colors_radio, images_quantity.GetIndex(), new DialogInterface.OnClickListener() {
+    .setSingleChoiceItems(colors_radio, images_quantity.index, new DialogInterface.OnClickListener() {
 
       @Override
       public void onClick(DialogInterface dialog, int which) {
@@ -188,7 +165,7 @@ public class MainActivity extends Activity {
         //dismissing the dialog when the user makes a selection.
         dialog.dismiss();
         
-        images_quantity = ImagesQuantity.GetByIndex(which);
+        images_quantity = ImagesQuantity.values()[which];
       }
     
     });
@@ -386,6 +363,7 @@ public class MainActivity extends Activity {
     pDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     pDialog.setCancelable(true);
     pDialog.show();
+    
     pDialog.setOnCancelListener(
         new DialogInterface.OnCancelListener(){
             @Override
@@ -396,6 +374,7 @@ public class MainActivity extends Activity {
             }
         }
     );
+    
     return pDialog;
   }  
   
