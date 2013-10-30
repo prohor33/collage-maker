@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -124,7 +125,9 @@ public class MainActivity extends Activity {
         }
                 
       	System.out.println("GiveMeCollage button click");
-        	         
+        
+      	if (make_collage_task != null && !make_collage_task.isCancelled())
+      	  make_collage_task.cancel(true);
       	make_collage_task = new MakeCollageTask(MainActivity.this);
       	make_collage_task.execute(nickname);
      	
@@ -167,8 +170,8 @@ public class MainActivity extends Activity {
         ImagesQuantity.Im_9.value.toString()+" images",
         ImagesQuantity.Im_12.value.toString()+" images",
         ImagesQuantity.Im_20.value.toString()+" images",
-/*        ImagesQuantity.Im_40.value.toString()+" images",
-        ImagesQuantity.Im_100.value.toString()+" images",*/
+        ImagesQuantity.Im_40.value.toString()+" images",
+        ImagesQuantity.Im_100.value.toString()+" images",
         };
     
     
@@ -291,7 +294,7 @@ public class MainActivity extends Activity {
   	et.setLayoutParams(lp2);
 			
 		
-  	// edit button "Give Me Collage"
+  	// button "Give Me Collage"
   	Button gmc_button = (Button) findViewById(R.id.GiveMeCollage);  
   	gmc_button.setText("Give Me Another One");
   	gmc_button.setTextSize(15);
@@ -320,8 +323,14 @@ public class MainActivity extends Activity {
           startActivity(Intent.createChooser(emailIntent, "Share with friends..."));
           
         }
-    });  	
-  	  	
+    });
+    
+    // text "Type instagram nickname"
+    TextView tw = (TextView) findViewById(R.id.label);
+    if (tw != null) {
+      if (orientation == Configuration.ORIENTATION_LANDSCAPE)
+        tw.setTextSize(14);
+    }
 	}
 	
 	

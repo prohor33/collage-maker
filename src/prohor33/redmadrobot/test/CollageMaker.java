@@ -120,13 +120,16 @@ public class CollageMaker {
     Bitmap collage = null;
     ImageSize image_size = ImageSize.UNDEF;
     
-    boolean exception_occure = false;
+    boolean exception_occure;
     while (true) {
+      exception_occure = false;
       try {
         collage = MakeCollageFromBitmapes(photo_map,
-            max_collage_size, collage_size_x, ImageSize.UNDEF);
+            max_collage_size, collage_size_x, image_size);
       } catch(NoImagesSuchABigSize e) {
         exception_occure = true;
+        if (image_size == ImageSize.SMALL)
+          throw new IOException("Not appropriate image sizes");
         if (image_size == ImageSize.MEDIUM)
           image_size = ImageSize.SMALL;        
         if (image_size == ImageSize.UNDEF)
@@ -275,6 +278,7 @@ public class CollageMaker {
 		  size_y = collage_size / size_x;
 		
 		if (image_size_level == ImageSize.UNDEF) {
+		  
   		image_size_level = ImageSize.SMALL;
   		
       if (collage_size <= 9)
