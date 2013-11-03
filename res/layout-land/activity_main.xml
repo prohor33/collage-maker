@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	 xmlns:android="http://schemas.android.com/apk/res/android"
+	 android:id="@+id/RelativeLayout01"
+	 android:layout_width="match_parent"
+	 android:layout_height="match_parent"
+	 android:background="@drawable/background_land">
+
+	<TextView
+	    android:id="@+id/label"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/entry"	  
+	    android:layout_marginBottom="10dip"
+	    android:layout_alignLeft="@+id/entry"	    
+        android:shadowColor="#000000"  
+        android:shadowRadius="5"  
+        android:shadowDx="1"  
+        android:shadowDy="1"
+	    android:text="@string/hello_world"
+	    android:textColor="@android:color/white"
+	    android:textSize="20sp"
+	    android:textStyle="bold" >
+		
+	</TextView>
+
+	<EditText
+	    android:id="@+id/entry"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_centerHorizontal="true"
+	    android:layout_centerVertical="true"
+	    android:background="@android:drawable/editbox_background"
+	    android:ems="10"
+	    android:inputType="text"
+	    android:scrollHorizontally="false"
+	    android:hint="@string/give_me_collage_hint"
+	    android:textSize="25sp" >
+		 
+	</EditText>
+
+	<Button
+	    android:id="@+id/GiveMeCollage"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignRight="@+id/entry"
+	    android:layout_below="@+id/entry"
+	    android:layout_marginTop="10dip"
+	    android:text="@string/give_me_collage" >
+
+	</Button>
+</RelativeLayout>

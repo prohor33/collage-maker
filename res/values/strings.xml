@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Gimme Collage</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Type instargam nickname here</string>
+    <string name="give_me_collage">Give Me Collage!</string>
+    <string name="give_me_collage_hint">nickname</string>
+
+</resources>
