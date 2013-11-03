@@ -232,6 +232,9 @@ public class MainActivity extends Activity {
       
     iv = new ImageView(MainActivity.this);
     iv.setImageBitmap(image_preview);  	
+    
+    iv.setBackgroundResource(R.drawable.white_back);
+    iv.setPadding(4, 4, 4, 4);
   	 	
     iv.setId(image_view_id);
   	
@@ -295,7 +298,11 @@ public class MainActivity extends Activity {
           emailIntent.setType("image/*");
           emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Photo Collage For You");
           emailIntent.putExtra(Intent.EXTRA_TEXT, "Hi, " + nickname + 
-              "! Here I have tiny present for you! =) (look at the attachments)");
+              "! Here I have tiny present for you! =) (look at the attachments)\n\n" +
+              "Done with \"Gimme Collage\" application. " +
+              "Check it out on the "+
+              "https://play.google.com/store/apps/details?id=prohor33.redmadrobot.test");
+
           emailIntent.putExtra(Intent.EXTRA_STREAM, u);
           startActivity(Intent.createChooser(emailIntent, "Share with friends..."));
           
