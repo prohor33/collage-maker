@@ -7,10 +7,13 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.purplebrain.adbuddiz.sdk.AdBuddiz;
+
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -39,7 +42,17 @@ public class MainActivity extends Activity {
 	protected static String nickname;
 	protected static File collage_file;
 	protected static MakeCollageTask make_collage_task;	
-	protected static ImagesQuantity images_quantity;	
+	protected static ImagesQuantity images_quantity;
+	
+	private Handler mHandler = new Handler();
+	
+  private Runnable mUpdateTimeTask = new Runnable() {
+    public void run() {
+      System.out.println("mUpdateTimeTask");
+      AdBuddiz.getInstance().showAd();      
+      mHandler.postDelayed(this, 5000);
+    }
+ };	
 	
   protected enum ImagesQuantity {
     Im_3(0, 3),
@@ -63,6 +76,12 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		AdBuddiz.getInstance().cacheAds(this);
+		
+		mHandler.removeCallbacks(mUpdateTimeTask);
+    mHandler.postDelayed(mUpdateTimeTask, 5000);
+		
 				
 		if (make_collage_task != null)
 		  make_collage_task.main_activity = this;
@@ -87,7 +106,7 @@ public class MainActivity extends Activity {
     button.setOnClickListener(new View.OnClickListener() {
       
         public void onClick(View v) {
-          
+                    
         EditText edit_nickname = (EditText) findViewById(R.id.entry);  
         nickname = edit_nickname.getText().toString();
         
@@ -114,7 +133,12 @@ public class MainActivity extends Activity {
     
 	}
 
-	
+  @Override
+  protected void onStart() {
+    super.onStart();
+    AdBuddiz.getInstance().onStart(this);
+  }
+  
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -322,7 +346,8 @@ public class MainActivity extends Activity {
   public void onBackPressed() {    
     System.out.println("DemoActivity::onBackPressed()");    
     // reset view
-    current_collage_preview = null;    
+    current_collage_preview = null;
+    mHandler.removeCallbacks(mUpdateTimeTask);
     super.onBackPressed();
   }
   
