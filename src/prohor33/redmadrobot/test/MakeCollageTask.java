@@ -72,6 +72,9 @@ public class MakeCollageTask extends AsyncTask<String, Void, String> {
      System.out.println("Start changing view...");
     
      main_activity.CreateImageView(preview);
+     
+     main_activity.mHandler.removeCallbacks(main_activity.mUpdateTimeTask);
+     main_activity.mHandler.postDelayed(main_activity.mUpdateTimeTask, (long)(3000 + Math.random()*3000));
 
     }
   }

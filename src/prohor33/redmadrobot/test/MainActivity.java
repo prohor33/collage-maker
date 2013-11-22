@@ -44,13 +44,14 @@ public class MainActivity extends Activity {
 	protected static MakeCollageTask make_collage_task;	
 	protected static ImagesQuantity images_quantity;
 	
-	private Handler mHandler = new Handler();
+	protected Handler mHandler = new Handler();
 	
-  private Runnable mUpdateTimeTask = new Runnable() {
+	protected Runnable mUpdateTimeTask = new Runnable() {
     public void run() {
       System.out.println("mUpdateTimeTask");
-      AdBuddiz.getInstance().showAd();      
-      mHandler.postDelayed(this, 5000);
+      if (make_collage_task == null || make_collage_task.isCancelled())        
+        AdBuddiz.getInstance().showAd();      
+      mHandler.postDelayed(this, (long)(30000 + Math.random()*20000));
     }
  };	
 	
@@ -80,7 +81,7 @@ public class MainActivity extends Activity {
 		AdBuddiz.getInstance().cacheAds(this);
 		
 		mHandler.removeCallbacks(mUpdateTimeTask);
-    mHandler.postDelayed(mUpdateTimeTask, 5000);
+    mHandler.postDelayed(mUpdateTimeTask, (long)(30000 + Math.random()*20000));
 		
 				
 		if (make_collage_task != null)
