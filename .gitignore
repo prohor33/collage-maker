@@ -1,25 +1,5 @@
-# C++ .gitignore
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-
-#Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-
-
-# Android .gitignore
-
-# built application files
+#built application files
 *.apk
-*.ap_
 
 # files for the dex VM
 *.dex
@@ -30,15 +10,24 @@
 # generated files
 bin/
 gen/
-obj/
-libs/
+build/
+app/build/
+instagram_api/build/
 
 # Local configuration file (sdk path, etc)
 local.properties
 
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
+.DS_Store
+
 # Eclipse project files
 .classpath
 .project
-.cproject
-.settings/
-project.properties
+
+# Android Studio
+.idea
+#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+.gradle
