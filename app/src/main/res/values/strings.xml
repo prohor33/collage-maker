@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">collage-maker</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Gimme Collage One Click</string>
     <string name="action_settings">Settings</string>
+    <string name="edit_text_hint">nickname</string>
+    <string name="static_text_above_edit">Type instargam nickname here</string>
+    <string name="main_btn_text">Give Me Collage</string>
+    <string name="no_nickname_text">Please, enter instagram nickname</string>
+
+    <!-- Instagram data (gimme-collage-express) -->
+    <string name="instagram_client_id">2806f35ae6824825b383c63f55a68c0f</string>
+    <string name="instagram_redirect_uri">instagram://connect</string>
 
 </resources>

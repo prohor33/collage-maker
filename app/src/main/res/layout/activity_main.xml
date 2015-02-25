@@ -7,7 +7,48 @@
     android:background="@drawable/background"
     tools:context=".MainActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/editText"
+        android:layout_marginBottom="10dip"
+        android:layout_centerHorizontal="true"
+        android:shadowColor="#000000"
+        android:shadowRadius="5"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:text="@string/static_text_above_edit"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" >
+
+    </TextView>
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@android:drawable/editbox_background"
+        android:ems="8"
+        android:hint="@string/edit_text_hint"
+        android:inputType="text"
+        android:scrollHorizontally="false"
+        android:textSize="25sp" >
+
+    </EditText>
+
+    <Button
+        android:id="@+id/mainButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/editText"
+        android:layout_marginTop="10dip"
+        android:text="@string/main_btn_text" >
+
+    </Button>
 
 </RelativeLayout>
