@@ -1,4 +1,4 @@
-package ndk.asteroids.prohor.collage_maker.instagram_api;
+package prohor33.redmadrobot.test.instagram_api;
 
 import android.content.Context;
 import android.content.SharedPreferences;

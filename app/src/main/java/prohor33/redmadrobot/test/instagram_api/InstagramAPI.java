@@ -1,11 +1,13 @@
-package ndk.asteroids.prohor.collage_maker.instagram_api;
+package prohor33.redmadrobot.test.instagram_api;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import ndk.asteroids.prohor.collage_maker.R;
+import java.util.ArrayList;
+
+import prohor33.redmadrobot.test.R;
 
 /**
  * Created by prohor on 25/02/15.
@@ -114,6 +116,10 @@ public class InstagramAPI {
                 mHandler.sendMessage(mHandler.obtainMessage(what, 0, 0, listener));
             }
         }.start();
+    }
+
+    public static ArrayList<Storage.ImageInfo> getImages() {
+        return getInstance().storage.imageInfos;
     }
 
     // private members only

@@ -1,4 +1,4 @@
-package ndk.asteroids.prohor.collage_maker;
+package prohor33.redmadrobot.test;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

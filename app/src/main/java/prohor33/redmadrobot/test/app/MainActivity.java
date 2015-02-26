@@ -1,4 +1,4 @@
-package ndk.asteroids.prohor.collage_maker.app;
+package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,9 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import ndk.asteroids.prohor.collage_maker.R;
-import ndk.asteroids.prohor.collage_maker.collage_maker.CollageMaker;
-import ndk.asteroids.prohor.collage_maker.instagram_api.InstagramAPI;
+import prohor33.redmadrobot.test.R;
+import prohor33.redmadrobot.test.collage_maker.CollageMaker;
+import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 
 
 public class MainActivity extends Activity {
@@ -78,11 +78,13 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    void getUserMedia() {
+    // private members only =========
+
+    private void getUserMedia() {
         InstagramAPI.with(new InstagramAPI.Listener() {
             @Override
             public void onSuccess() {
-                CollageMaker.generateCollage();
+                generateCollage();
 
                 // debug
                 Toast.makeText(getApplicationContext(), "successfully find user",
@@ -95,5 +97,22 @@ public class MainActivity extends Activity {
                         Toast.LENGTH_LONG).show();
             }
         }).fetchUserMedia();
+    }
+
+    private void generateCollage() {
+        CollageMaker.with(new CollageMaker.Listener() {
+            @Override
+            public void onSuccess() {
+                // debug
+                Toast.makeText(getApplicationContext(), "collage have been successfully generated",
+                        Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFail(String error) {
+                Toast.makeText(getApplicationContext(), error,
+                        Toast.LENGTH_LONG).show();
+            }
+        }).generateCollage();
     }
 }

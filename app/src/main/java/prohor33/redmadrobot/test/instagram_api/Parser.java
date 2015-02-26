@@ -1,4 +1,4 @@
-package ndk.asteroids.prohor.collage_maker.instagram_api;
+package prohor33.redmadrobot.test.instagram_api;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -7,7 +7,7 @@ import org.json.JSONTokener;
 
 import java.util.List;
 
-import ndk.asteroids.prohor.collage_maker.instagram_api.Storage.*;
+import prohor33.redmadrobot.test.instagram_api.Storage.*;
 
 /**
  * Created by prohor on 25/02/15.
