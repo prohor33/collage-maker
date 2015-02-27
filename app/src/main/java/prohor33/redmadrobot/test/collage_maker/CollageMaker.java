@@ -47,6 +47,7 @@ public class CollageMaker {
     private final int imageInCollageCount = 9;
     private ImageSize targetCollageImageSize;
     private ArrayList<ImageLoadAsyncTask> currentLoaderTasks = new ArrayList<>();
+    private Bitmap collageBitmap;
 
     public enum ImageSize {
         standard_resolution,
@@ -70,11 +71,21 @@ public class CollageMaker {
         return with(null);
     }
 
+    public static void generateCollagePreview() {
+        getInstance().targetCollageImageSize = ImageSize.thumbnail;
+        getInstance().generateCollageImpl(ImageSize.thumbnail);
+    }
+
     public static void generateCollage() {
         getInstance().targetCollageImageSize = ImageSize.standard_resolution;
         getInstance().generateCollageImpl(ImageSize.standard_resolution);
     }
     private void generateCollageImpl(ImageSize imageSize) {
+        // 1) start ImageLoadAsyncTask
+        // 2) addLoadedBitmap()
+        // 3) buildCollage()
+        // 4) listener -> onSuccess()
+
         ArrayList<Storage.ImageInfo> images = InstagramAPI.getImages();
 
         Collections.sort(images, new Comparator<Storage.ImageInfo>() {
@@ -112,6 +123,10 @@ public class CollageMaker {
         reloadCollage();
     }
 
+    public static Bitmap getCollageBitmap() {
+        return getInstance().collageBitmap;
+    }
+
     // private members only
     private void reloadCollage() {
         cancelAllTasks();
@@ -140,6 +155,7 @@ public class CollageMaker {
             @Override
             public void onSuccess() {
                 Log.d(TAG, "Collage successfully generated!");
+                collageBitmap = bitmap;
                 listener.onSuccess();
             }
 

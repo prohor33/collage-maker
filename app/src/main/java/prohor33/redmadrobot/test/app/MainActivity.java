@@ -1,17 +1,21 @@
 package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
+import prohor33.redmadrobot.test.utility.RoundButton;
 
 
 public class MainActivity extends Activity {
@@ -53,6 +57,8 @@ public class MainActivity extends Activity {
                 }).findUser(nickname);
             }
         });
+
+        setupRoundButtons();
     }
 
 
@@ -84,7 +90,7 @@ public class MainActivity extends Activity {
         InstagramAPI.with(new InstagramAPI.Listener() {
             @Override
             public void onSuccess() {
-                generateCollage();
+                generateCollagePreview();
 
                 // debug
                 Toast.makeText(getApplicationContext(), "successfully find user",
@@ -97,6 +103,24 @@ public class MainActivity extends Activity {
                         Toast.LENGTH_LONG).show();
             }
         }).fetchUserMedia();
+    }
+
+    private void generateCollagePreview() {
+        CollageMaker.with(new CollageMaker.Listener() {
+            @Override
+            public void onSuccess() {
+                // debug
+                Toast.makeText(getApplicationContext(), "preview have been successfully generated",
+                        Toast.LENGTH_LONG).show();
+                showPreview(true);
+            }
+
+            @Override
+            public void onFail(String error) {
+                Toast.makeText(getApplicationContext(), error,
+                        Toast.LENGTH_LONG).show();
+            }
+        }).generateCollagePreview();
     }
 
     private void generateCollage() {
@@ -114,5 +138,39 @@ public class MainActivity extends Activity {
                         Toast.LENGTH_LONG).show();
             }
         }).generateCollage();
+    }
+
+    private void showPreview(boolean show) {
+        RelativeLayout rlNicknameGroup = (RelativeLayout) findViewById(R.id.rlNicknameEditGroup);
+        RelativeLayout rlCollageGroup = (RelativeLayout) findViewById(R.id.rlCollageGroup);
+
+        ImageView ivCollage = (ImageView) findViewById(R.id.collageImageView);
+        Bitmap collageBitmap = CollageMaker.getCollageBitmap();
+        if (collageBitmap != null)
+            ivCollage.setImageBitmap(collageBitmap);
+
+        rlNicknameGroup.setVisibility(show ? View.GONE : View.VISIBLE);
+        rlCollageGroup.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void setupRoundButtons() {
+        RoundButton closeCollageBtn = (RoundButton) findViewById(R.id.close_collage_btn);
+        closeCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
+        closeCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_close_collage_btn));
+        closeCollageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RelativeLayout rlCollageGroup = (RelativeLayout) findViewById(R.id.rlCollageGroup);
+                showPreview(rlCollageGroup.getVisibility() == View.GONE);
+            }
+        });
+
+        RoundButton shareCollageBtn = (RoundButton) findViewById(R.id.share_collage_btn);
+        shareCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
+        shareCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_collage_share));
+
+        RoundButton saveCollageBtn = (RoundButton) findViewById(R.id.save_collage_btn);
+        saveCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
+        saveCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_collage_save));
     }
 }
