@@ -1,8 +1,10 @@
 package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,10 +22,15 @@ import prohor33.redmadrobot.test.utility.RoundButton;
 
 public class MainActivity extends Activity {
 
+    private static final String TAG = "MainActivity";
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // TODO: handle progress bar
 
         InstagramAPI.putContext(MainActivity.this);
 
@@ -43,6 +50,14 @@ public class MainActivity extends Activity {
                     return;
                 }
 
+                // TODO: progress bar style is horrible
+                if (progressDialog == null)
+                    progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setTitle(getString(R.string.progress_load_preview_title));
+                progressDialog.setMessage(getString(R.string.progress_load_preview_message));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
                 InstagramAPI.with(new InstagramAPI.Listener() {
                     @Override
                     public void onSuccess() {
@@ -53,6 +68,8 @@ public class MainActivity extends Activity {
                     public void onFail(String error) {
                         Toast.makeText(getApplicationContext(), error,
                                 Toast.LENGTH_LONG).show();
+                        if (progressDialog != null)
+                            progressDialog.dismiss();
                     }
                 }).findUser(nickname);
             }
@@ -101,6 +118,8 @@ public class MainActivity extends Activity {
             public void onFail(String error) {
                 Toast.makeText(getApplicationContext(), error,
                         Toast.LENGTH_LONG).show();
+                if (progressDialog != null)
+                    progressDialog.dismiss();
             }
         }).fetchUserMedia();
     }
@@ -112,6 +131,8 @@ public class MainActivity extends Activity {
                 // debug
                 Toast.makeText(getApplicationContext(), "preview have been successfully generated",
                         Toast.LENGTH_LONG).show();
+                if (progressDialog != null)
+                    progressDialog.dismiss();
                 showPreview(true);
             }
 
@@ -119,6 +140,8 @@ public class MainActivity extends Activity {
             public void onFail(String error) {
                 Toast.makeText(getApplicationContext(), error,
                         Toast.LENGTH_LONG).show();
+                if (progressDialog != null)
+                    progressDialog.dismiss();
             }
         }).generateCollagePreview();
     }
@@ -168,9 +191,21 @@ public class MainActivity extends Activity {
         RoundButton shareCollageBtn = (RoundButton) findViewById(R.id.share_collage_btn);
         shareCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
         shareCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_collage_share));
+        shareCollageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Not implemented yet");
+            }
+        });
 
         RoundButton saveCollageBtn = (RoundButton) findViewById(R.id.save_collage_btn);
         saveCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
         saveCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_collage_save));
+        saveCollageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Not implemented yet");
+            }
+        });
     }
 }
