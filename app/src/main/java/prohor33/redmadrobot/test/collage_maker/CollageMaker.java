@@ -1,14 +1,9 @@
 package prohor33.redmadrobot.test.collage_maker;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,8 +67,11 @@ public class CollageMaker {
     }
 
     public static void generateCollagePreview() {
-        getInstance().targetCollageImageSize = ImageSize.thumbnail;
-        getInstance().generateCollageImpl(ImageSize.thumbnail);
+        // TODO: remove
+        getInstance().targetCollageImageSize = ImageSize.standard_resolution;
+        getInstance().generateCollageImpl(ImageSize.standard_resolution);
+//        getInstance().targetCollageImageSize = ImageSize.thumbnail;
+//        getInstance().generateCollageImpl(ImageSize.thumbnail);
     }
 
     public static void generateCollage() {

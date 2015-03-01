@@ -1,7 +1,6 @@
 package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,20 +16,21 @@ import android.widget.Toast;
 import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
+import prohor33.redmadrobot.test.utility.ProgressDialogManager;
 import prohor33.redmadrobot.test.utility.RoundButton;
 
 
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
-    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        // TODO: handle progress bar
+        ProgressDialogManager.with(MainActivity.this).restore();
+
+        setContentView(R.layout.activity_main);
 
         InstagramAPI.putContext(MainActivity.this);
 
@@ -50,13 +50,8 @@ public class MainActivity extends Activity {
                     return;
                 }
 
-                // TODO: progress bar style is horrible
-                if (progressDialog == null)
-                    progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.setTitle(getString(R.string.progress_load_preview_title));
-                progressDialog.setMessage(getString(R.string.progress_load_preview_message));
-                progressDialog.setCancelable(false);
-                progressDialog.show();
+                ProgressDialogManager.show(R.string.progress_load_preview_title,
+                        R.string.progress_load_preview_message);
 
                 InstagramAPI.with(new InstagramAPI.Listener() {
                     @Override
@@ -68,8 +63,7 @@ public class MainActivity extends Activity {
                     public void onFail(String error) {
                         Toast.makeText(getApplicationContext(), error,
                                 Toast.LENGTH_LONG).show();
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
+                        ProgressDialogManager.dismiss();
                     }
                 }).findUser(nickname);
             }
@@ -101,6 +95,13 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ProgressDialogManager.onPause();
+    }
+
+
     // private members only =========
 
     private void getUserMedia() {
@@ -118,8 +119,7 @@ public class MainActivity extends Activity {
             public void onFail(String error) {
                 Toast.makeText(getApplicationContext(), error,
                         Toast.LENGTH_LONG).show();
-                if (progressDialog != null)
-                    progressDialog.dismiss();
+                ProgressDialogManager.dismiss();
             }
         }).fetchUserMedia();
     }
@@ -131,8 +131,7 @@ public class MainActivity extends Activity {
                 // debug
                 Toast.makeText(getApplicationContext(), "preview have been successfully generated",
                         Toast.LENGTH_LONG).show();
-                if (progressDialog != null)
-                    progressDialog.dismiss();
+                ProgressDialogManager.dismiss();
                 showPreview(true);
             }
 
@@ -140,8 +139,7 @@ public class MainActivity extends Activity {
             public void onFail(String error) {
                 Toast.makeText(getApplicationContext(), error,
                         Toast.LENGTH_LONG).show();
-                if (progressDialog != null)
-                    progressDialog.dismiss();
+                ProgressDialogManager.dismiss();
             }
         }).generateCollagePreview();
     }
@@ -164,6 +162,7 @@ public class MainActivity extends Activity {
     }
 
     private void showPreview(boolean show) {
+        Log.d(TAG, "Show preview");
         RelativeLayout rlNicknameGroup = (RelativeLayout) findViewById(R.id.rlNicknameEditGroup);
         RelativeLayout rlCollageGroup = (RelativeLayout) findViewById(R.id.rlCollageGroup);
 
