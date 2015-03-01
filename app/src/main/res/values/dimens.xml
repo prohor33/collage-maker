@@ -3,7 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <!-- Main controls -->
     <dimen name="collage_image_view_margin">10dp</dimen>
-    <dimen name="collage_iv_back_padding">3dp</dimen>
     <dimen name="round_btn_size">78dp</dimen>
+    <dimen name="collage_iv_margin_bottom">260dp</dimen>
 </resources>

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.media.ThumbnailUtils;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -211,9 +213,27 @@ public class CollageMaker {
         for (int y = 0; y < count_y; y++) {
             for (int x = 0; x < count_x; x++) {
                 int i = count_x * y + x;
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmaps.get(i),
-                        img_size, img_size, true);
-                collageCanvas.drawBitmap(scaledBitmap,
+                Bitmap bitmap = bitmaps.get(i);
+
+                Point place_size = new Point(img_size, img_size);
+                float place_aspect = (float)place_size.y / place_size.x;
+                float image_aspect = (float)bitmap.getHeight() / bitmap.getWidth();
+
+                Point img_t_size = new Point();
+                if (place_aspect > image_aspect) {
+                    img_t_size.x = (int)(bitmap.getHeight() / place_aspect);
+                    img_t_size.y = bitmap.getHeight();
+                } else {
+                    img_t_size.x = bitmap.getWidth();
+                    img_t_size.y = (int)(bitmap.getWidth() * place_aspect);
+                }
+
+                // crop square in center
+                // but if image originally with white spaces, this doesn't helps, obviously
+                bitmap = ThumbnailUtils.extractThumbnail(bitmap, img_t_size.x, img_t_size.y);
+                bitmap = Bitmap.createScaledBitmap(bitmap, place_size.x, place_size.y, true);
+
+                collageCanvas.drawBitmap(bitmap,
                         x * img_size + padding * (x + 1),
                         y * img_size + padding * (y + 1),
                         new Paint(Paint.FILTER_BITMAP_FLAG));

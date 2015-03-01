@@ -1,15 +1,16 @@
 package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -50,6 +51,8 @@ public class MainActivityUtils {
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard();
+
                 final String nickname = nickEditText.getText().toString();
                 if (nickname.isEmpty()) {
                     Toast.makeText(mainActivity, mainActivity.getString(R.string.no_nickname_text),
@@ -87,10 +90,6 @@ public class MainActivityUtils {
             @Override
             public void onSuccess() {
                 generateCollagePreview();
-
-                // debug
-                Toast.makeText(mainActivity, "successfully find user",
-                        Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -106,9 +105,6 @@ public class MainActivityUtils {
         CollageMaker.with(new CollageMaker.Listener() {
             @Override
             public void onSuccess() {
-                // debug
-                Toast.makeText(mainActivity, "preview have been successfully generated",
-                        Toast.LENGTH_LONG).show();
                 ProgressDialogManager.dismiss();
                 showPreview(true);
             }
@@ -129,10 +125,6 @@ public class MainActivityUtils {
         CollageMaker.with(new CollageMaker.Listener() {
             @Override
             public void onSuccess() {
-                // debug
-                Toast.makeText(mainActivity, "collage have been successfully generated",
-                        Toast.LENGTH_LONG).show();
-
                 saveCollage(share);
             }
 
@@ -147,7 +139,6 @@ public class MainActivityUtils {
 
     private static void showPreview(boolean show) {
         Utils.throwIfNotUIThread();
-        Log.d(TAG, "Show preview, show = " + show);
         CollageMaker.showCollage(show);
         RelativeLayout rlNicknameGroup = (RelativeLayout) mainActivity.findViewById(R.id.rlNicknameEditGroup);
         RelativeLayout rlCollageGroup = (RelativeLayout) mainActivity.findViewById(R.id.rlCollageGroup);
@@ -224,8 +215,8 @@ public class MainActivityUtils {
 
         int max_width = parent.getWidth();
         int max_height = parent.getHeight();
-        Log.d(TAG, "max_w = " + max_width);
-        Log.d(TAG, "max_h = " + max_height);
+//        Log.d(TAG, "max_w = " + max_width);
+//        Log.d(TAG, "max_h = " + max_height);
         int collage_w, collage_h;
         if (max_height > aspect_ratio * max_width) {
             collage_w = max_width;
@@ -314,5 +305,14 @@ public class MainActivityUtils {
         sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileResult));
         mainActivity.startActivity(Intent.createChooser(sharingIntent,
                 mainActivity.getString(R.string.main_activity_share_chooser)));
+    }
+
+    private static void hideKeyboard() {
+        // Check if no view has focus:
+        View view = mainActivity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 }
