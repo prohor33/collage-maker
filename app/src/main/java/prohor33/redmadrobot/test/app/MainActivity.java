@@ -18,6 +18,7 @@ import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.utility.ProgressDialogManager;
 import prohor33.redmadrobot.test.utility.RoundButton;
+import prohor33.redmadrobot.test.utility.Utils;
 
 
 public class MainActivity extends Activity {
@@ -34,42 +35,7 @@ public class MainActivity extends Activity {
 
         InstagramAPI.putContext(MainActivity.this);
 
-        final EditText nickEditText = (EditText) findViewById(R.id.editText);
-
-        // TODO: remove
-        nickEditText.setText("damedvedev");
-
-        Button mainButton = (Button) findViewById(R.id.mainButton);
-        mainButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final String nickname = nickEditText.getText().toString();
-                if (nickname.isEmpty()) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.no_nickname_text),
-                            Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                ProgressDialogManager.show(R.string.progress_load_preview_title,
-                        R.string.progress_load_preview_message);
-
-                InstagramAPI.with(new InstagramAPI.Listener() {
-                    @Override
-                    public void onSuccess() {
-                        getUserMedia();
-                    }
-
-                    @Override
-                    public void onFail(String error) {
-                        Toast.makeText(getApplicationContext(), error,
-                                Toast.LENGTH_LONG).show();
-                        ProgressDialogManager.dismiss();
-                    }
-                }).findUser(nickname);
-            }
-        });
-
-        setupRoundButtons();
+        MainActivityUtils.onCreate(MainActivity.this);
     }
 
 
@@ -99,112 +65,5 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         ProgressDialogManager.onPause();
-    }
-
-
-    // private members only =========
-
-    private void getUserMedia() {
-        InstagramAPI.with(new InstagramAPI.Listener() {
-            @Override
-            public void onSuccess() {
-                generateCollagePreview();
-
-                // debug
-                Toast.makeText(getApplicationContext(), "successfully find user",
-                        Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFail(String error) {
-                Toast.makeText(getApplicationContext(), error,
-                        Toast.LENGTH_LONG).show();
-                ProgressDialogManager.dismiss();
-            }
-        }).fetchUserMedia();
-    }
-
-    private void generateCollagePreview() {
-        CollageMaker.with(new CollageMaker.Listener() {
-            @Override
-            public void onSuccess() {
-                // debug
-                Toast.makeText(getApplicationContext(), "preview have been successfully generated",
-                        Toast.LENGTH_LONG).show();
-                ProgressDialogManager.dismiss();
-                showPreview(true);
-            }
-
-            @Override
-            public void onFail(String error) {
-                Toast.makeText(getApplicationContext(), error,
-                        Toast.LENGTH_LONG).show();
-                ProgressDialogManager.dismiss();
-            }
-        }).generateCollagePreview();
-    }
-
-    private void generateCollage() {
-        CollageMaker.with(new CollageMaker.Listener() {
-            @Override
-            public void onSuccess() {
-                // debug
-                Toast.makeText(getApplicationContext(), "collage have been successfully generated",
-                        Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFail(String error) {
-                Toast.makeText(getApplicationContext(), error,
-                        Toast.LENGTH_LONG).show();
-            }
-        }).generateCollage();
-    }
-
-    private void showPreview(boolean show) {
-        Log.d(TAG, "Show preview");
-        RelativeLayout rlNicknameGroup = (RelativeLayout) findViewById(R.id.rlNicknameEditGroup);
-        RelativeLayout rlCollageGroup = (RelativeLayout) findViewById(R.id.rlCollageGroup);
-
-        ImageView ivCollage = (ImageView) findViewById(R.id.collageImageView);
-        Bitmap collageBitmap = CollageMaker.getCollageBitmap();
-        if (collageBitmap != null)
-            ivCollage.setImageBitmap(collageBitmap);
-
-        rlNicknameGroup.setVisibility(show ? View.GONE : View.VISIBLE);
-        rlCollageGroup.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
-    private void setupRoundButtons() {
-        RoundButton closeCollageBtn = (RoundButton) findViewById(R.id.close_collage_btn);
-        closeCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
-        closeCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_close_collage_btn));
-        closeCollageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                RelativeLayout rlCollageGroup = (RelativeLayout) findViewById(R.id.rlCollageGroup);
-                showPreview(rlCollageGroup.getVisibility() == View.GONE);
-            }
-        });
-
-        RoundButton shareCollageBtn = (RoundButton) findViewById(R.id.share_collage_btn);
-        shareCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
-        shareCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_collage_share));
-        shareCollageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "Not implemented yet");
-            }
-        });
-
-        RoundButton saveCollageBtn = (RoundButton) findViewById(R.id.save_collage_btn);
-        saveCollageBtn.setColor(getResources().getColor(R.color.round_buttons_color));
-        saveCollageBtn.setDrawable(getResources().getDrawable(R.drawable.ic_collage_save));
-        saveCollageBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "Not implemented yet");
-            }
-        });
     }
 }

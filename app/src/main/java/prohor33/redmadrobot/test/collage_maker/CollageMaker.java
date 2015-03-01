@@ -43,6 +43,7 @@ public class CollageMaker {
     private ImageSize targetCollageImageSize;
     private ArrayList<ImageLoadAsyncTask> currentLoaderTasks = new ArrayList<>();
     private Bitmap collageBitmap;
+    private boolean showingCollage = false;
 
     public enum ImageSize {
         standard_resolution,
@@ -67,11 +68,8 @@ public class CollageMaker {
     }
 
     public static void generateCollagePreview() {
-        // TODO: remove
-        getInstance().targetCollageImageSize = ImageSize.standard_resolution;
-        getInstance().generateCollageImpl(ImageSize.standard_resolution);
-//        getInstance().targetCollageImageSize = ImageSize.thumbnail;
-//        getInstance().generateCollageImpl(ImageSize.thumbnail);
+        getInstance().targetCollageImageSize = ImageSize.thumbnail;
+        getInstance().generateCollageImpl(ImageSize.thumbnail);
     }
 
     public static void generateCollage() {
@@ -89,7 +87,7 @@ public class CollageMaker {
         Collections.sort(images, new Comparator<Storage.ImageInfo>() {
             @Override
             public int compare(Storage.ImageInfo imageInfo, Storage.ImageInfo imageInfo2) {
-                return imageInfo.likes_count - imageInfo2.likes_count;
+                return imageInfo2.likes_count - imageInfo.likes_count;
             }
         });
 
@@ -125,7 +123,19 @@ public class CollageMaker {
         return getInstance().collageBitmap;
     }
 
-    // private members only
+    public static void showCollage(boolean show) {
+        getInstance().showCollageImpl(show);
+    }
+    private void showCollageImpl(boolean show) {
+        getInstance().showingCollage = show;
+        if (!show)
+            collageBitmap = null;
+    }
+    public static boolean isShowingCollage() {
+        return getInstance().showingCollage;
+    }
+
+    // private members only ==================
     private void reloadCollage() {
         cancelAllTasks();
         int i = targetCollageImageSize.ordinal() + 1;
