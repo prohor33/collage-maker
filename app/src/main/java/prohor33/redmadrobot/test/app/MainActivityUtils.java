@@ -1,9 +1,12 @@
 package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -14,11 +17,17 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.utility.ProgressDialogManager;
 import prohor33.redmadrobot.test.utility.RoundButton;
+import prohor33.redmadrobot.test.utility.SimpleAsyncListener;
+import prohor33.redmadrobot.test.utility.SimpleAsyncTask;
 import prohor33.redmadrobot.test.utility.Utils;
 
 /**
@@ -113,19 +122,25 @@ public class MainActivityUtils {
         }).generateCollagePreview();
     }
 
-    private static void generateCollage() {
+    private static void generateCollage(final boolean share) {
+        ProgressDialogManager.show(R.string.progress_load_preview_title,
+                R.string.progress_load_preview_message);
+
         CollageMaker.with(new CollageMaker.Listener() {
             @Override
             public void onSuccess() {
                 // debug
                 Toast.makeText(mainActivity, "collage have been successfully generated",
                         Toast.LENGTH_LONG).show();
+
+                saveCollage(share);
             }
 
             @Override
             public void onFail(String error) {
                 Toast.makeText(mainActivity, error,
                         Toast.LENGTH_LONG).show();
+                ProgressDialogManager.dismiss();
             }
         }).generateCollage();
     }
@@ -165,7 +180,7 @@ public class MainActivityUtils {
         shareCollageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Not implemented yet");
+                generateCollage(true);
             }
         });
 
@@ -175,7 +190,7 @@ public class MainActivityUtils {
         saveCollageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Not implemented yet");
+                generateCollage(false);
             }
         });
     }
@@ -226,5 +241,78 @@ public class MainActivityUtils {
         layoutParams.width = collage_w;
         layoutParams.height = collage_h;
         ivCollage.setLayoutParams(layoutParams);
+    }
+
+    private static void saveCollage(final boolean share) {
+
+        new SimpleAsyncTask(new SimpleAsyncListener() {
+            File file;
+
+            @Override
+            public void onSuccess() {
+                ProgressDialogManager.dismiss();
+
+                if (share) {
+                    openShareDialog(file);
+                } else {
+                    String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                    extStorageDirectory += "/" + file.getName();
+                    Toast.makeText(mainActivity,
+                            mainActivity.getString(R.string.main_activity_toast_collage_saved_to)
+                                    + extStorageDirectory,
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                ProgressDialogManager.dismiss();
+            }
+
+            @Override
+            public Boolean doInBackground() {
+                Bitmap bmpImage = CollageMaker.getCollageBitmap();
+                if (bmpImage == null)
+                    return false;
+
+                String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                OutputStream outStream;
+                String temp = new String("collage");
+                file = new File(extStorageDirectory, temp + ".png");
+                if (file.exists()) {
+                    file.delete();
+                    file = new File(extStorageDirectory, temp + ".png");
+                }
+
+                try {
+                    outStream = new FileOutputStream(file);
+                    bmpImage.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.flush();
+                    outStream.close();
+                } catch (Exception e) {
+                    Log.v(TAG, "Error saving file: " + e.toString());
+                    return false;
+                }
+                return true;
+            }
+        }).execute();
+    }
+
+    private static void openShareDialog(File fileResult) {
+        if (fileResult == null) {
+            Log.v(TAG, "Null file pointer");
+            return;
+        }
+
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("image/png");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+                mainActivity.getString(R.string.main_activity_collage_mail_subject));
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                mainActivity.getString(R.string.main_activity_collage_mail_text));
+
+        sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(fileResult));
+        mainActivity.startActivity(Intent.createChooser(sharingIntent,
+                mainActivity.getString(R.string.main_activity_share_chooser)));
     }
 }

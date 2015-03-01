@@ -15,4 +15,12 @@
     <!-- Progress dialog -->
     <string name="progress_load_preview_title">Just a second</string>
     <string name="progress_load_preview_message">Loading images...</string>
+
+    <!-- Share dialog -->
+    <string name="main_activity_collage_mail_subject">Little present</string>
+    <string name="main_activity_collage_mail_text">\n#gimmecollage</string>
+    <string name="main_activity_share_chooser">Share via</string>
+
+    <!-- Toast -->
+    <string name="main_activity_toast_collage_saved_to">Collage saved to </string>
 </resources>
