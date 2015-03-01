@@ -2,10 +2,14 @@ package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.os.Build;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -137,6 +141,7 @@ public class MainActivityUtils {
         Bitmap collageBitmap = CollageMaker.getCollageBitmap();
         if (collageBitmap != null)
             ivCollage.setImageBitmap(collageBitmap);
+        onCollageLayoutSizeChanged();
 
         rlNicknameGroup.setVisibility(show ? View.GONE : View.VISIBLE);
         rlCollageGroup.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -173,5 +178,53 @@ public class MainActivityUtils {
                 Log.d(TAG, "Not implemented yet");
             }
         });
+    }
+
+    private static void onCollageLayoutSizeChanged() {
+        final ImageView ivCollage = (ImageView) mainActivity.findViewById(R.id.collageImageView);
+        ViewTreeObserver vto = ivCollage.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                updateCollageLayoutSize();
+
+                ViewTreeObserver obs = ivCollage.getViewTreeObserver();
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    obs.removeOnGlobalLayoutListener(this);
+                } else {
+                    obs.removeGlobalOnLayoutListener(this);
+                }
+            }
+
+        });
+    }
+
+    private static void updateCollageLayoutSize() {
+        float aspect_ratio = CollageMaker.getCollageImageAspectRatio();
+
+        ImageView ivCollage = (ImageView) mainActivity.findViewById(R.id.collageImageView);
+        RelativeLayout parent = (RelativeLayout) ivCollage.getParent();
+
+        int max_width = parent.getWidth();
+        int max_height = parent.getHeight();
+        Log.d(TAG, "max_w = " + max_width);
+        Log.d(TAG, "max_h = " + max_height);
+        int collage_w, collage_h;
+        if (max_height > aspect_ratio * max_width) {
+            collage_w = max_width;
+            collage_h = (int)(aspect_ratio * max_width);
+        } else {
+            collage_h = max_height;
+            collage_w = (int)(max_height / aspect_ratio);
+        }
+
+        RelativeLayout.LayoutParams layoutParams =
+                (RelativeLayout.LayoutParams) ivCollage.getLayoutParams();
+
+        layoutParams.width = collage_w;
+        layoutParams.height = collage_h;
+        ivCollage.setLayoutParams(layoutParams);
     }
 }

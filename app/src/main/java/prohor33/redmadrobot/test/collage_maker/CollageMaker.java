@@ -135,6 +135,15 @@ public class CollageMaker {
         return getInstance().showingCollage;
     }
 
+    public static float getCollageImageAspectRatio() {
+        return getInstance().getCollageImageAspectRatioImpl();
+    }
+    private float getCollageImageAspectRatioImpl() {
+        if (collageBitmap == null)
+            return 1.0f;
+        return collageBitmap.getHeight() / collageBitmap.getWidth();
+    }
+
     // private members only ==================
     private void reloadCollage() {
         cancelAllTasks();

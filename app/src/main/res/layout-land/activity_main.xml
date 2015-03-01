@@ -1,0 +1,116 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@drawable/background"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:id="@+id/rlNicknameEditGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/editText"
+            android:layout_marginBottom="10dip"
+            android:layout_centerHorizontal="true"
+            android:shadowColor="#000000"
+            android:shadowRadius="5"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:text="@string/static_text_above_edit"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" >
+
+        </TextView>
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@android:drawable/editbox_background"
+            android:ems="8"
+            android:hint="@string/edit_text_hint"
+            android:inputType="text"
+            android:scrollHorizontally="false"
+            android:textColor="@android:color/black"
+            android:textSize="25sp" >
+
+        </EditText>
+
+        <Button
+            android:id="@+id/mainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/editText"
+            android:layout_marginTop="10dip"
+            android:text="@string/main_btn_text" >
+
+        </Button>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlCollageGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone">
+
+        <prohor33.redmadrobot.test.utility.RoundButton
+            android:id="@+id/close_collage_btn"
+            android:layout_width="@dimen/round_btn_size"
+            android:layout_height="@dimen/round_btn_size"
+            android:layout_toRightOf="@+id/collageImageView"
+            android:layout_alignTop="@+id/collageImageView"
+            />
+
+        <ImageView
+            android:id="@+id/collageImageView"
+            android:layout_width="10dip"
+            android:layout_height="fill_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/collage_image_back"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/collageImageView"
+            android:layout_toRightOf="@id/collageImageView"
+            android:orientation="vertical">
+
+            <prohor33.redmadrobot.test.utility.RoundButton
+                android:id="@+id/share_collage_btn"
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                />
+
+            <prohor33.redmadrobot.test.utility.RoundButton
+                android:id="@+id/save_collage_btn"
+                android:layout_width="@dimen/round_btn_size"
+                android:layout_height="@dimen/round_btn_size"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                />
+
+            </LinearLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>
