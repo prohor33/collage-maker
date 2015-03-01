@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:background="@drawable/background"
+    android:background="@drawable/background_land"
     tools:context=".MainActivity">
 
     <RelativeLayout
@@ -83,8 +83,7 @@
             android:layout_width="10dip"
             android:layout_height="fill_parent"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/collage_image_back"/>
+            android:layout_centerVertical="true"/>
 
         <LinearLayout
             android:layout_width="wrap_content"

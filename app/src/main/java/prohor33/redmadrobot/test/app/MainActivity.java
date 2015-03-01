@@ -1,24 +1,14 @@
 package prohor33.redmadrobot.test.app;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.utility.ProgressDialogManager;
-import prohor33.redmadrobot.test.utility.RoundButton;
-import prohor33.redmadrobot.test.utility.Utils;
 
 
 public class MainActivity extends Activity {
@@ -34,6 +24,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         InstagramAPI.putContext(MainActivity.this);
+        CollageMaker.putContext(MainActivity.this);
 
         MainActivityUtils.onCreate(MainActivity.this);
     }

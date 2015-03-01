@@ -1,5 +1,6 @@
 package prohor33.redmadrobot.test.collage_maker;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.instagram_api.Storage;
 import prohor33.redmadrobot.test.utility.ImageLoadAsyncTask;
@@ -37,6 +39,7 @@ public class CollageMaker {
     private static final int COLLAGE_PXL_SIZE_THUMBNAIL = 150 * 3;
 
     private static CollageMaker instance;
+    private static Context context;
     private Listener listener;
     private ArrayList<Bitmap> bitmaps = new ArrayList<>();
     private final int imageInCollageCount = 9;
@@ -65,6 +68,10 @@ public class CollageMaker {
 
     public static CollageMaker with() {
         return with(null);
+    }
+
+    public static void putContext(Context a) {
+        context = a;
     }
 
     public static void generateCollagePreview() {
@@ -193,18 +200,22 @@ public class CollageMaker {
 
         int count_y = (int) Math.sqrt(imageInCollageCount);
         int count_x = imageInCollageCount / count_y;
-        int img_size = collage_size_x / count_x;
+        int padding = collage_size_x / 100;
+        int img_size = (collage_size_x - padding * (count_x + 1)) / count_x;
 
-        Bitmap collageImage = Bitmap.createBitmap(img_size * count_x,
-                img_size * count_y, Bitmap.Config.ARGB_8888);
+        Bitmap collageImage = Bitmap.createBitmap(img_size * count_x + padding * (count_x + 1),
+                img_size * count_y + padding * (count_y + 1), Bitmap.Config.ARGB_8888);
         Canvas collageCanvas = new Canvas(collageImage);
+        collageCanvas.drawColor(context.getResources().getColor(R.color.white));
 
         for (int y = 0; y < count_y; y++) {
             for (int x = 0; x < count_x; x++) {
                 int i = count_x * y + x;
                 Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmaps.get(i),
                         img_size, img_size, true);
-                collageCanvas.drawBitmap(scaledBitmap, x * img_size, y * img_size,
+                collageCanvas.drawBitmap(scaledBitmap,
+                        x * img_size + padding * (x + 1),
+                        y * img_size + padding * (y + 1),
                         new Paint(Paint.FILTER_BITMAP_FLAG));
             }
         }
