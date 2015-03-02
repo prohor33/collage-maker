@@ -122,6 +122,10 @@ public class InstagramAPI {
         return getInstance().storage.imageInfos;
     }
 
+    public static Storage.UserInfo getUserInfo() {
+        return getInstance().storage.selfUserInfo;
+    }
+
     // private members only
 
     // this func must control that listener is not null.

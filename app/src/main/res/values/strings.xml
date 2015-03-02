@@ -23,4 +23,9 @@
 
     <!-- Toast -->
     <string name="main_activity_toast_collage_saved_to">Collage saved to </string>
+
+    <!-- Error messages -->
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="no_user_with_such_nickname">No user with such a nickname</string>
+    <string name="user_have_no_public_media">User have no public images</string>
 </resources>

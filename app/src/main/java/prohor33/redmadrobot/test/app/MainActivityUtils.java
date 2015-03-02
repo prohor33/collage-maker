@@ -44,9 +44,6 @@ public class MainActivityUtils {
 
         final EditText nickEditText = (EditText) mainActivity.findViewById(R.id.editText);
 
-        // TODO: remove
-        nickEditText.setText("damedvedev");
-
         Button mainButton = (Button) mainActivity.findViewById(R.id.mainButton);
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,18 +57,24 @@ public class MainActivityUtils {
                     return;
                 }
 
+                if (!Utils.checkAndNotifyConnection(mainActivity))
+                    return;
+
                 ProgressDialogManager.show(R.string.progress_load_preview_title,
                         R.string.progress_load_preview_message);
 
                 InstagramAPI.with(new InstagramAPI.Listener() {
                     @Override
                     public void onSuccess() {
+                        nickEditText.setText(InstagramAPI.getUserInfo().username);
                         getUserMedia();
                     }
 
                     @Override
                     public void onFail(String error) {
-                        Toast.makeText(mainActivity, error,
+                        Log.d(TAG, "findUser onFail:" + error);
+                        Toast.makeText(mainActivity,
+                                mainActivity.getString(R.string.no_user_with_such_nickname),
                                 Toast.LENGTH_LONG).show();
                         ProgressDialogManager.dismiss();
                     }
@@ -94,7 +97,9 @@ public class MainActivityUtils {
 
             @Override
             public void onFail(String error) {
-                Toast.makeText(mainActivity, error,
+                Log.d(TAG, "fetchUserMedia onFail:" + error);
+                Toast.makeText(mainActivity,
+                        mainActivity.getString(R.string.user_have_no_public_media),
                         Toast.LENGTH_LONG).show();
                 ProgressDialogManager.dismiss();
             }
@@ -215,6 +220,7 @@ public class MainActivityUtils {
 
         int max_width = parent.getWidth();
         int max_height = parent.getHeight();
+//        Log.d(TAG, "aspect_ratio = " + aspect_ratio);
 //        Log.d(TAG, "max_w = " + max_width);
 //        Log.d(TAG, "max_h = " + max_height);
         int collage_w, collage_h;
@@ -225,6 +231,9 @@ public class MainActivityUtils {
             collage_h = max_height;
             collage_w = (int)(max_height / aspect_ratio);
         }
+
+//        Log.d(TAG, "collage_h = " + collage_h);
+//        Log.d(TAG, "collage_w = " + collage_w);
 
         RelativeLayout.LayoutParams layoutParams =
                 (RelativeLayout.LayoutParams) ivCollage.getLayoutParams();

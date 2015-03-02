@@ -41,10 +41,11 @@ public class CollageMaker {
     private static final int COLLAGE_PXL_SIZE_THUMBNAIL = 150 * 3;
 
     private static CollageMaker instance;
-    private static Context context;
+    private static Context mainActivity;
     private Listener listener;
     private ArrayList<Bitmap> bitmaps = new ArrayList<>();
-    private final int imageInCollageCount = 9;
+    private final int defaultImageInCollageCount = 9;
+    private int imageInCollageCount;
     private ImageSize targetCollageImageSize;
     private ArrayList<ImageLoadAsyncTask> currentLoaderTasks = new ArrayList<>();
     private Bitmap collageBitmap;
@@ -73,7 +74,7 @@ public class CollageMaker {
     }
 
     public static void putContext(Context a) {
-        context = a;
+        mainActivity = a;
     }
 
     public static void generateCollagePreview() {
@@ -101,6 +102,10 @@ public class CollageMaker {
         });
 
         cancelAllTasks();
+        imageInCollageCount = Math.min(defaultImageInCollageCount, images.size());
+        if (imageInCollageCount == 0)
+            listener.onFail(mainActivity.getString(R.string.user_have_no_public_media));
+
         for (int i = 0; i < imageInCollageCount; i++) {
             ImageLoadAsyncTask task =
                     ImageLoader.loadImage(getImageResolution(images.get(i), imageSize).url);
@@ -150,7 +155,7 @@ public class CollageMaker {
     private float getCollageImageAspectRatioImpl() {
         if (collageBitmap == null)
             return 1.0f;
-        return collageBitmap.getHeight() / collageBitmap.getWidth();
+        return ((float) collageBitmap.getHeight()) / collageBitmap.getWidth();
     }
 
     // private members only ==================
@@ -205,10 +210,14 @@ public class CollageMaker {
         int padding = collage_size_x / 100;
         int img_size = (collage_size_x - padding * (count_x + 1)) / count_x;
 
+        Log.d(TAG, "count " + count_x + "x" + count_y);
+        Log.d(TAG, "imageInCollageCount " + imageInCollageCount);
+        Log.d(TAG, "img_size " + img_size + "x" + img_size);
+
         Bitmap collageImage = Bitmap.createBitmap(img_size * count_x + padding * (count_x + 1),
                 img_size * count_y + padding * (count_y + 1), Bitmap.Config.ARGB_8888);
         Canvas collageCanvas = new Canvas(collageImage);
-        collageCanvas.drawColor(context.getResources().getColor(R.color.white));
+        collageCanvas.drawColor(mainActivity.getResources().getColor(R.color.white));
 
         for (int y = 0; y < count_y; y++) {
             for (int x = 0; x < count_x; x++) {
