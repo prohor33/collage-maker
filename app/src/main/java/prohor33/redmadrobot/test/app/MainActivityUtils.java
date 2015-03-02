@@ -3,6 +3,7 @@ package prohor33.redmadrobot.test.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -50,20 +51,13 @@ public class MainActivityUtils {
         putGimmeCollageButtonActive(!nickEditText.getText().toString().isEmpty());
         nickEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
             public void afterTextChanged(Editable editable) {
-                Log.d(TAG, "onKey, active = " + !nickEditText.getText().toString().isEmpty());
                 putGimmeCollageButtonActive(!nickEditText.getText().toString().isEmpty());
             }
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
         });
 
         Button mainButton = (Button) mainActivity.findViewById(R.id.gimmeCollageButton);
@@ -265,6 +259,15 @@ public class MainActivityUtils {
 
 //        Log.d(TAG, "collage_h = " + collage_h);
 //        Log.d(TAG, "collage_w = " + collage_w);
+
+        if (mainActivity.getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_LANDSCAPE &&
+                aspect_ratio < 1.0f) {
+            final float special_coef = 0.66f;
+            collage_h *= special_coef;
+            collage_w *= special_coef;
+        }
+
 
         RelativeLayout.LayoutParams layoutParams =
                 (RelativeLayout.LayoutParams) ivCollage.getLayoutParams();
