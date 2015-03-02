@@ -3,8 +3,7 @@
 
     <string name="app_name">Gimme Collage Express Edition</string>
     <string name="action_settings">Settings</string>
-    <string name="edit_text_hint">nickname</string>
-    <string name="static_text_above_edit">Type instargam nickname here</string>
+    <string name="edit_text_hint">Instagram nickname</string>
     <string name="main_btn_text">Give Me Collage</string>
     <string name="no_nickname_text">Please, enter instagram nickname</string>
 

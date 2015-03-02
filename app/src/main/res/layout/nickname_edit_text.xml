@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editText"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:layout_alignParentTop="true"
+    android:background="@drawable/nickname_edit_text_back"
+    android:ems="8"
+    android:hint="@string/edit_text_hint"
+    android:textColorHint="@color/edit_text_hint"
+    android:inputType="text"
+    android:scrollHorizontally="false"
+    android:textColor="@android:color/black"
+    android:textSize="25sp"
+    android:textStyle="bold"
+    android:layout_margin="@dimen/edit_text_margin">
+</EditText>

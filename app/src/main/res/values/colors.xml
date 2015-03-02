@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="round_buttons_color">#ffffff</color>
+    <color name="round_buttons">#ffffff</color>
+    <color name="nickname_edit_group_back">#94000000</color>
+    <color name="gimme_button_back">#ff8f8f8f</color>
+    <color name="gimme_button_back_active">#ffff0709</color>
+    <color name="gimme_button_back_stroke">#ffffff</color>
+
+    <!-- Edit text -->
+    <color name="edit_text_hint">#ff8f8f8f</color>
+    <color name="edit_text_back">#ffffff</color>
+    <color name="edit_text_back_stroke">#ff8f8f8f</color>
+
+    <!-- Back color filter -->
+    <color name="main_back_color_tint">#a1000000</color>
 
     <!-- Common -->
     <color name="white">#FFFFFF</color>

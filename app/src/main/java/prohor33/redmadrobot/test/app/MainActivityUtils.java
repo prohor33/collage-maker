@@ -4,9 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -43,8 +47,26 @@ public class MainActivityUtils {
         mainActivity = activity;
 
         final EditText nickEditText = (EditText) mainActivity.findViewById(R.id.editText);
+        putGimmeCollageButtonActive(!nickEditText.getText().toString().isEmpty());
+        nickEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
-        Button mainButton = (Button) mainActivity.findViewById(R.id.mainButton);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                Log.d(TAG, "onKey, active = " + !nickEditText.getText().toString().isEmpty());
+                putGimmeCollageButtonActive(!nickEditText.getText().toString().isEmpty());
+            }
+        });
+
+        Button mainButton = (Button) mainActivity.findViewById(R.id.gimmeCollageButton);
         mainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -156,11 +178,20 @@ public class MainActivityUtils {
 
         rlNicknameGroup.setVisibility(show ? View.GONE : View.VISIBLE);
         rlCollageGroup.setVisibility(show ? View.VISIBLE : View.GONE);
+
+        FrameLayout flMain = (FrameLayout) mainActivity.findViewById(R.id.flMain);
+        if (show) {
+            flMain.getBackground().setColorFilter(
+                    mainActivity.getResources().getColor(R.color.main_back_color_tint),
+                    PorterDuff.Mode.SRC_ATOP);
+        } else {
+            flMain.getBackground().setColorFilter(null);
+        }
     }
 
     private static void setupRoundButtons() {
         RoundButton closeCollageBtn = (RoundButton) mainActivity.findViewById(R.id.close_collage_btn);
-        closeCollageBtn.setColor(mainActivity.getResources().getColor(R.color.round_buttons_color));
+        closeCollageBtn.setColor(mainActivity.getResources().getColor(R.color.round_buttons));
         closeCollageBtn.setDrawable(mainActivity.getResources().getDrawable(R.drawable.ic_close_collage_btn));
         closeCollageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +202,7 @@ public class MainActivityUtils {
         });
 
         RoundButton shareCollageBtn = (RoundButton) mainActivity.findViewById(R.id.share_collage_btn);
-        shareCollageBtn.setColor(mainActivity.getResources().getColor(R.color.round_buttons_color));
+        shareCollageBtn.setColor(mainActivity.getResources().getColor(R.color.round_buttons));
         shareCollageBtn.setDrawable(mainActivity.getResources().getDrawable(R.drawable.ic_collage_share));
         shareCollageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,7 +212,7 @@ public class MainActivityUtils {
         });
 
         RoundButton saveCollageBtn = (RoundButton) mainActivity.findViewById(R.id.save_collage_btn);
-        saveCollageBtn.setColor(mainActivity.getResources().getColor(R.color.round_buttons_color));
+        saveCollageBtn.setColor(mainActivity.getResources().getColor(R.color.round_buttons));
         saveCollageBtn.setDrawable(mainActivity.getResources().getDrawable(R.drawable.ic_collage_save));
         saveCollageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,5 +354,12 @@ public class MainActivityUtils {
             InputMethodManager inputManager = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+    private static void putGimmeCollageButtonActive(boolean active) {
+        Button button = (Button) mainActivity.findViewById(R.id.gimmeCollageButton);
+        button.setBackground(mainActivity.getDrawable(active ?
+                R.drawable.gimme_button_back_active : R.drawable.gimme_button_back));
+        button.setActivated(active);
     }
 }

@@ -1,64 +1,32 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/background_land"
     tools:context=".MainActivity">
 
     <RelativeLayout
-        android:id="@+id/rlNicknameEditGroup"
+        android:id="@+id/rlNicknameEditGroupParent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true">
 
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/editText"
-            android:layout_marginBottom="10dip"
-            android:layout_centerHorizontal="true"
-            android:shadowColor="#000000"
-            android:shadowRadius="5"
-            android:shadowDx="1"
-            android:shadowDy="1"
-            android:text="@string/static_text_above_edit"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" >
-
-        </TextView>
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/rlNicknameEditGroup"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@android:drawable/editbox_background"
-            android:ems="8"
-            android:hint="@string/edit_text_hint"
-            android:inputType="text"
-            android:scrollHorizontally="false"
-            android:textColor="@android:color/black"
-            android:textSize="25sp" >
+            android:background="@color/nickname_edit_group_back"
+            android:padding="@dimen/nickname_edit_group_back_padding">
 
-        </EditText>
+            <include layout="@layout/nickname_edit_text"/>
 
-        <Button
-            android:id="@+id/mainButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/editText"
-            android:layout_marginTop="10dip"
-            android:text="@string/main_btn_text" >
+            <include layout="@layout/gimme_collage_button"/>
 
-        </Button>
+        </RelativeLayout>
 
     </RelativeLayout>
 
@@ -83,6 +51,8 @@
             android:layout_width="10dip"
             android:layout_height="fill_parent"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/collage_image_view_margin"
+            android:layout_marginBottom="@dimen/collage_image_view_margin"
             android:layout_centerVertical="true"/>
 
         <LinearLayout
