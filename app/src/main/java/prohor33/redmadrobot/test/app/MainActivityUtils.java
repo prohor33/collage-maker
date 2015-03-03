@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import prohor33.redmadrobot.test.R;
+import prohor33.redmadrobot.test.ads.Ads;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.utility.ProgressDialogManager;
@@ -55,6 +56,9 @@ public class MainActivityUtils {
         mainActivity = activity;
 
         final EditText nickEditText = (EditText) mainActivity.findViewById(R.id.editText);
+        // TODO: remove
+        nickEditText.setText("damedvedev");
+
         putGimmeCollageButtonActive(!nickEditText.getText().toString().isEmpty());
         nickEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -112,6 +116,8 @@ public class MainActivityUtils {
 
         setupRoundButtons();
         showPreview(CollageMaker.isShowingCollage());
+
+        Ads.showBanner(mainActivity);
     }
 
     // private members only =========
@@ -123,7 +129,7 @@ public class MainActivityUtils {
                 if (!ProgressDialogManager.isCanceled()) {
                     ProgressDialogManager.setProgress(PROGRESS_FETCH_USER_MEDIA);
                     ProgressDialogManager.setNewTarget(
-                            R.string.progress_load_images_message);
+                            R.string.progress_load_images_preview_message);
                     generateCollagePreview();
                 }
             }
@@ -285,6 +291,7 @@ public class MainActivityUtils {
 //        Log.d(TAG, "collage_h = " + collage_h);
 //        Log.d(TAG, "collage_w = " + collage_w);
 
+        // if image is horizontal polygon
         if (mainActivity.getResources().getConfiguration().orientation ==
                 Configuration.ORIENTATION_LANDSCAPE &&
                 aspect_ratio < 1.0f) {

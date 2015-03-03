@@ -101,7 +101,7 @@ public class InstagramAPI {
     }
     public void fetchUserMediaImpl() {
         final Listener listener = this.listener;
-        Log.d(TAG, "FEtch user media ...");
+        Log.d(TAG, "Fetch user media ...");
         new Thread() {
             @Override
             public void run() {

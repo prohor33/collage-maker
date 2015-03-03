@@ -83,7 +83,7 @@ public class RoundButton extends Button {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, (float) (getWidth() / 2.6), mButtonPaint);
+        canvas.drawCircle(getWidth() / 2, getHeight() / 2, (float) (getWidth() / 2.0), mButtonPaint);
         if (null != mBitmap) {
             canvas.drawBitmap(mBitmap, (getWidth() - mBitmap.getWidth()) / 2,
                     (getHeight() - mBitmap.getHeight()) / 2, mDrawablePaint);

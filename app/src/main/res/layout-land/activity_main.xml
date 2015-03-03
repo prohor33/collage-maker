@@ -30,56 +30,70 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/rlCollageGroup"
+    <LinearLayout
+        android:id="@+id/llBannerAndCollageGroup"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="gone">
+        android:orientation="vertical">
 
-        <prohor33.redmadrobot.test.utility.RoundButton
-            android:id="@+id/close_collage_btn"
-            android:layout_width="@dimen/round_btn_size"
-            android:layout_height="@dimen/round_btn_size"
-            android:layout_toRightOf="@+id/collageImageView"
-            android:layout_alignTop="@+id/collageImageView"
-            />
+        <FrameLayout
+            android:id="@+id/flBannerHolder"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"></FrameLayout>
 
-        <ImageView
-            android:id="@+id/collageImageView"
-            android:layout_width="10dip"
+        <RelativeLayout
+            android:id="@+id/rlCollageGroup"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/collage_image_view_margin"
-            android:layout_marginBottom="@dimen/collage_image_view_margin"
-            android:layout_centerVertical="true"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/collageImageView"
-            android:layout_toLeftOf="@id/collageImageView"
-            android:orientation="vertical">
+            android:layout_centerVertical="true"
+            android:visibility="gone">
 
             <prohor33.redmadrobot.test.utility.RoundButton
-                android:id="@+id/share_collage_btn"
+                android:id="@+id/close_collage_btn"
                 android:layout_width="@dimen/round_btn_size"
                 android:layout_height="@dimen/round_btn_size"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/collageImageView"
+                android:layout_alignTop="@+id/collageImageView"
                 />
 
-            <prohor33.redmadrobot.test.utility.RoundButton
-                android:id="@+id/save_collage_btn"
-                android:layout_width="@dimen/round_btn_size"
-                android:layout_height="@dimen/round_btn_size"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                />
+            <ImageView
+                android:id="@+id/collageImageView"
+                android:layout_width="10dip"
+                android:layout_height="fill_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/collage_image_view_margin"
+                android:layout_marginBottom="@dimen/collage_image_view_margin"
+                android:layout_centerVertical="true"/>
 
-            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/collageImageView"
+                android:layout_toLeftOf="@id/collageImageView"
+                android:orientation="vertical">
 
-    </RelativeLayout>
+                <prohor33.redmadrobot.test.utility.RoundButton
+                    android:id="@+id/share_collage_btn"
+                    android:layout_width="@dimen/round_btn_size"
+                    android:layout_height="@dimen/round_btn_size"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="@dimen/round_btn_margin"
+                    />
+
+                <prohor33.redmadrobot.test.utility.RoundButton
+                    android:id="@+id/save_collage_btn"
+                    android:layout_width="@dimen/round_btn_size"
+                    android:layout_height="@dimen/round_btn_size"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    />
+
+                </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </FrameLayout>

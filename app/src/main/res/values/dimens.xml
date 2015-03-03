@@ -1,8 +1,12 @@
 <resources>
     <!-- Main controls -->
     <dimen name="edit_text_margin">10dp</dimen>
-    <dimen name="round_btn_size">78dp</dimen>
+
     <dimen name="collage_iv_margin_bottom">260dp</dimen>
-    <dimen name="collage_image_view_margin">16dp</dimen>
+    <dimen name="collage_image_view_margin">20dp</dimen>
     <dimen name="nickname_edit_group_back_padding">30dp</dimen>
+
+    <!-- Round buttons -->
+    <dimen name="round_btn_size">60dp</dimen>
+    <dimen name="round_btn_margin">16dp</dimen>
 </resources>

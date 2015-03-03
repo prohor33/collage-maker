@@ -53,16 +53,18 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:layout_above="@+id/llRoundButtons"
             android:layout_marginRight="@dimen/collage_image_view_margin"
             android:layout_marginLeft="@dimen/collage_image_view_margin"
             android:adjustViewBounds="true"/>
 
         <LinearLayout
+            android:id="@+id/llRoundButtons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/collageImageView"
-            android:layout_below="@id/collageImageView"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/round_btn_margin"
             android:orientation="horizontal">
 
             <prohor33.redmadrobot.test.utility.RoundButton
@@ -71,6 +73,7 @@
                 android:layout_height="@dimen/round_btn_size"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/round_btn_margin"
                 />
 
             <prohor33.redmadrobot.test.utility.RoundButton
