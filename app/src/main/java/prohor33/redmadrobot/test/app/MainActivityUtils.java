@@ -298,6 +298,8 @@ public class MainActivityUtils {
             final float special_coef = 0.66f;
             collage_h *= special_coef;
             collage_w *= special_coef;
+            // hack
+            collage_w += 100;
         }
 
 
