@@ -3,6 +3,8 @@ package prohor33.redmadrobot.test.utility;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
@@ -18,6 +20,7 @@ public class ProgressDialogManager {
     private WeakReference<ProgressDialog> currentProgress;
     private String currentTitle;
     private String currentMessage;
+    private int currentProgressValue;
     private boolean active = false;
 
     public static synchronized ProgressDialogManager getInstance() {
@@ -39,6 +42,7 @@ public class ProgressDialogManager {
 //        Log.d(TAG, "show progress dialog");
         currentTitle = context.getString(title);
         currentMessage = context.getString(message);
+        currentProgressValue = 0;
         createDialog();
         active = true;
     }
@@ -73,12 +77,53 @@ public class ProgressDialogManager {
         }
     }
 
+    public static boolean isCanceled() {
+        return !getInstance().active;
+    }
+
+    public static void setNewTarget(int message) {
+        getInstance().setNewTargetImpl(message);
+    }
+    private void setNewTargetImpl(int message) {
+        if (active) {
+            ProgressDialog progress = currentProgress.get();
+            currentMessage = context.getString(message);
+            progress.setMessage(currentMessage);
+        }
+    }
+
+    public static void setProgress(int value) {
+        getInstance().setProgressImpl(value);
+    }
+    private void setProgressImpl(int value) {
+        if (active) {
+            currentProgressValue = value;
+            currentProgress.get().setProgress(value);
+        }
+    }
+
     // private members only ============
     private void createDialog() {
         if (context == null)
             throw new RuntimeException("Please, use with() method to set context");
 
-        currentProgress = new WeakReference<>(ProgressDialog.show(context,
-                currentTitle, currentMessage, true));
+        ProgressDialog progress = new ProgressDialog(context);
+        currentProgress = new WeakReference<>(progress);
+        progress.setTitle(currentTitle);
+        progress.setMessage(currentMessage);
+        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progress.setCancelable(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // not necessary
+            progress.setProgressNumberFormat("");
+        }
+        progress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                active = false;
+            }
+        });
+        progress.show();
+        progress.setProgress(currentProgressValue);
     }
 }

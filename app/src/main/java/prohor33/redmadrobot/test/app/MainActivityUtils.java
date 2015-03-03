@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
@@ -44,6 +43,14 @@ public class MainActivityUtils {
     private static final String TAG = "MainActivityUtils";
     private static Activity mainActivity;
 
+    // task chain 1
+    private static final int PROGRESS_FIND_USER = 10;
+    private static final int PROGRESS_FETCH_USER_MEDIA = 20;
+    private static final int PROGRESS_GENERATE_PREVIEW = 100;
+    // task chain 2
+    private static final int PROGRESS_GENERATE_COLLAGE = 70;
+    private static final int PROGRESS_SAVE_COLLAGE = 100;
+
     public static void onCreate(Activity activity) {
         mainActivity = activity;
 
@@ -77,13 +84,18 @@ public class MainActivityUtils {
                     return;
 
                 ProgressDialogManager.show(R.string.progress_load_preview_title,
-                        R.string.progress_load_preview_message);
+                        R.string.progress_find_user_message);
 
                 InstagramAPI.with(new InstagramAPI.Listener() {
                     @Override
                     public void onSuccess() {
                         nickEditText.setText(InstagramAPI.getUserInfo().username);
-                        getUserMedia();
+                        if (!ProgressDialogManager.isCanceled()) {
+                            ProgressDialogManager.setProgress(PROGRESS_FIND_USER);
+                            ProgressDialogManager.setNewTarget(
+                                    R.string.progress_find_user_media_message);
+                            getUserMedia();
+                        }
                     }
 
                     @Override
@@ -108,7 +120,12 @@ public class MainActivityUtils {
         InstagramAPI.with(new InstagramAPI.Listener() {
             @Override
             public void onSuccess() {
-                generateCollagePreview();
+                if (!ProgressDialogManager.isCanceled()) {
+                    ProgressDialogManager.setProgress(PROGRESS_FETCH_USER_MEDIA);
+                    ProgressDialogManager.setNewTarget(
+                            R.string.progress_load_images_message);
+                    generateCollagePreview();
+                }
             }
 
             @Override
@@ -126,8 +143,10 @@ public class MainActivityUtils {
         CollageMaker.with(new CollageMaker.Listener() {
             @Override
             public void onSuccess() {
-                ProgressDialogManager.dismiss();
-                showPreview(true);
+                if (!ProgressDialogManager.isCanceled()) {
+                    ProgressDialogManager.dismiss();
+                    showPreview(true);
+                }
             }
 
             @Override
@@ -136,17 +155,23 @@ public class MainActivityUtils {
                         Toast.LENGTH_LONG).show();
                 ProgressDialogManager.dismiss();
             }
-        }).generateCollagePreview();
+        }).generateCollagePreview().with_progress(PROGRESS_FETCH_USER_MEDIA, PROGRESS_GENERATE_PREVIEW);
     }
 
     private static void generateCollage(final boolean share) {
         ProgressDialogManager.show(R.string.progress_load_preview_title,
-                R.string.progress_load_preview_message);
+                R.string.progress_load_images_message);
 
         CollageMaker.with(new CollageMaker.Listener() {
             @Override
             public void onSuccess() {
-                saveCollage(share);
+                if (!ProgressDialogManager.isCanceled()) {
+                    ProgressDialogManager.setProgress(PROGRESS_GENERATE_COLLAGE);
+                    ProgressDialogManager.setNewTarget(
+                            share ? R.string.progress_sharing_collage_message :
+                                    R.string.progress_saving_collage_message);
+                    saveCollage(share, PROGRESS_GENERATE_COLLAGE, PROGRESS_SAVE_COLLAGE);
+                }
             }
 
             @Override
@@ -155,7 +180,7 @@ public class MainActivityUtils {
                         Toast.LENGTH_LONG).show();
                 ProgressDialogManager.dismiss();
             }
-        }).generateCollage();
+        }).generateCollage().with_progress(0, PROGRESS_GENERATE_COLLAGE);
     }
 
     private static void showPreview(boolean show) {
@@ -277,24 +302,26 @@ public class MainActivityUtils {
         ivCollage.setLayoutParams(layoutParams);
     }
 
-    private static void saveCollage(final boolean share) {
+    private static void saveCollage(final boolean share, final int progressFrom, final int progressTo) {
 
         new SimpleAsyncTask(new SimpleAsyncListener() {
             File file;
 
             @Override
             public void onSuccess() {
-                ProgressDialogManager.dismiss();
+                if (!ProgressDialogManager.isCanceled()) {
+                    ProgressDialogManager.dismiss();
 
-                if (share) {
-                    openShareDialog(file);
-                } else {
-                    String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
-                    extStorageDirectory += "/" + file.getName();
-                    Toast.makeText(mainActivity,
-                            mainActivity.getString(R.string.main_activity_toast_collage_saved_to)
-                                    + extStorageDirectory,
-                            Toast.LENGTH_LONG).show();
+                    if (share) {
+                        openShareDialog(file);
+                    } else {
+                        String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+                        extStorageDirectory += "/" + file.getName();
+                        Toast.makeText(mainActivity,
+                                mainActivity.getString(R.string.main_activity_toast_collage_saved_to)
+                                        + extStorageDirectory,
+                                Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -317,6 +344,8 @@ public class MainActivityUtils {
                     file.delete();
                     file = new File(extStorageDirectory, temp + ".png");
                 }
+
+                ProgressDialogManager.setProgress(progressTo - (progressTo - progressFrom) / 10);
 
                 try {
                     outStream = new FileOutputStream(file);
@@ -361,8 +390,11 @@ public class MainActivityUtils {
 
     private static void putGimmeCollageButtonActive(boolean active) {
         Button button = (Button) mainActivity.findViewById(R.id.gimmeCollageButton);
-        button.setBackground(mainActivity.getDrawable(active ?
+        button.setBackgroundDrawable(mainActivity.getResources().getDrawable(active ?
                 R.drawable.gimme_button_back_active : R.drawable.gimme_button_back));
-        button.setActivated(active);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // not necessary
+            button.setActivated(active);
+        }
     }
 }

@@ -15,6 +15,7 @@ import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.instagram_api.Storage;
 import prohor33.redmadrobot.test.utility.ImageLoadAsyncTask;
+import prohor33.redmadrobot.test.utility.ProgressDialogManager;
 import prohor33.redmadrobot.test.utility.SimpleAsyncListener;
 import prohor33.redmadrobot.test.utility.SimpleAsyncTask;
 
@@ -50,6 +51,9 @@ public class CollageMaker {
     private ArrayList<ImageLoadAsyncTask> currentLoaderTasks = new ArrayList<>();
     private Bitmap collageBitmap;
     private boolean showingCollage = false;
+    private int progressFrom = 0;
+    private int progressTo = 100;
+    private boolean withProgress = false;
 
     public enum ImageSize {
         standard_resolution,
@@ -73,24 +77,32 @@ public class CollageMaker {
         return with(null);
     }
 
+    public static void with_progress(int from, int to) {
+        getInstance().progressFrom = from;
+        getInstance().progressTo = to;
+        getInstance().withProgress = true;
+    }
+
     public static void putContext(Context a) {
         mainActivity = a;
     }
 
-    public static void generateCollagePreview() {
+    public static CollageMaker generateCollagePreview() {
         getInstance().targetCollageImageSize = ImageSize.thumbnail;
-        getInstance().generateCollageImpl(ImageSize.thumbnail);
+        return getInstance().generateCollageImpl(ImageSize.thumbnail);
     }
 
-    public static void generateCollage() {
+    public static CollageMaker generateCollage() {
         getInstance().targetCollageImageSize = ImageSize.standard_resolution;
-        getInstance().generateCollageImpl(ImageSize.standard_resolution);
+        return getInstance().generateCollageImpl(ImageSize.standard_resolution);
     }
-    private void generateCollageImpl(ImageSize imageSize) {
+    private CollageMaker generateCollageImpl(ImageSize imageSize) {
         // 1) start ImageLoadAsyncTask
         // 2) addLoadedBitmap()
         // 3) buildCollage()
         // 4) listener -> onSuccess()
+
+        withProgress = false;
 
         ArrayList<Storage.ImageInfo> images = InstagramAPI.getImages();
 
@@ -111,6 +123,8 @@ public class CollageMaker {
                     ImageLoader.loadImage(getImageResolution(images.get(i), imageSize).url);
             currentLoaderTasks.add(task);
         }
+
+        return this;
     }
 
     // calling from main thread
@@ -120,6 +134,19 @@ public class CollageMaker {
     private void addLoadedBitmapImpl(Bitmap bmp) {
         Log.d(TAG, "Image loaded");
         bitmaps.add(bmp);
+
+        if (ProgressDialogManager.isCanceled()) {
+            cancelAllTasks();
+            listener.onFail("Canceled");
+            return;
+        }
+
+        if (withProgress) {
+            int progress = (progressTo - progressFrom) * bitmaps.size() / imageInCollageCount;
+            progress += progressFrom;
+            ProgressDialogManager.setProgress(progress);
+        }
+
         if (bitmaps.size() >= imageInCollageCount)
             tryBuildCollage();
     }
@@ -290,7 +317,7 @@ public class CollageMaker {
 
     private void cancelAllTasks() {
         for (ImageLoadAsyncTask task : currentLoaderTasks) {
-            task.cancel();
+            task.cancel(true);
         }
         currentLoaderTasks.clear();
         bitmaps.clear();

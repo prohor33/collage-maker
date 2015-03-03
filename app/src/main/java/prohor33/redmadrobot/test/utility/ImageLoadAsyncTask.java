@@ -11,15 +11,10 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Boolean> {
     private SimpleAsyncListener mSimpleAsyncListener;
     private String mErrorString;
     private ProgressDialog mProgressDialog;
-    private boolean canceled = false;
 
     public ImageLoadAsyncTask(SimpleAsyncListener simpleAsyncListener) {
         super();
         mSimpleAsyncListener = simpleAsyncListener;
-    }
-
-    public void cancel() {
-        canceled = true;
     }
 
     @Override
@@ -35,8 +30,6 @@ public class ImageLoadAsyncTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean result) {
         super.onPostExecute(result);
-        if (canceled)
-            return;
 
         if(result) {
             mSimpleAsyncListener.onSuccess();
