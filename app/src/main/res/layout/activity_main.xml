@@ -20,7 +20,8 @@
             android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
             android:background="@color/nickname_edit_group_back"
-            android:padding="@dimen/nickname_edit_group_back_padding"
+            android:paddingTop="@dimen/nickname_edit_group_back_padding"
+            android:paddingBottom="@dimen/nickname_edit_group_back_padding"
             android:layout_marginBottom="@dimen/collage_iv_margin_bottom">
 
             <include layout="@layout/nickname_edit_text"/>

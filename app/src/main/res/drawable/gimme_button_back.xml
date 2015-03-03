@@ -6,7 +6,7 @@
     <solid android:color="@color/gimme_button_back"/>
 
     <stroke android:width="2dp" android:color="@color/gimme_button_back_stroke" />
-    <padding android:left="20dp" android:top="0dp" android:right="20dp"
-    android:bottom="0dp" />
+    <padding android:left="20dp" android:top="10dp" android:right="20dp"
+    android:bottom="10dp" />
 
 </shape>
