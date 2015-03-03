@@ -7,7 +7,8 @@ import android.net.NetworkInfo;
 import android.os.Looper;
 import android.widget.Toast;
 
-import prohor33.redmadrobot.test.R;
+import prohor33.redmadrobot.test.app.R;
+
 
 /**
  * Created by prohor on 01/03/15.

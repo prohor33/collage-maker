@@ -3,7 +3,6 @@ package prohor33.redmadrobot.test.ads;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.google.android.gms.ads.AdRequest;
@@ -11,8 +10,8 @@ import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
-import prohor33.redmadrobot.test.R;
-import prohor33.redmadrobot.test.app.Application;
+import prohor33.redmadrobot.test.app.R;
+import prohor33.redmadrobot.test.app.AppInternalSettings;
 
 /**
  * Created by prohor on 03/03/15.
@@ -22,7 +21,7 @@ public class Ads {
     private static InterstitialAd mInterstitial = null;
 
     public static void showBanner(Activity activity) {
-        if (!Application.showAds)
+        if (!AppInternalSettings.showAds)
             return;
 
         AdView mAdView = new AdView(activity);

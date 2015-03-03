@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
-import prohor33.redmadrobot.test.R;
+import prohor33.redmadrobot.test.app.R;
 
 /**
  * Created by prohor on 27/02/15.

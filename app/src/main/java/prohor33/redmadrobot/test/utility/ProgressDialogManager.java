@@ -2,12 +2,13 @@ package prohor33.redmadrobot.test.utility;
 
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
+
+import prohor33.redmadrobot.test.analytic.GoogleAnalyticsUtils;
+import prohor33.redmadrobot.test.app.MainActivity;
 
 /**
  * Created by prohor on 01/03/15.
@@ -16,7 +17,7 @@ public class ProgressDialogManager {
 
     private static final String TAG = "ProgressDialogManager";
     private static ProgressDialogManager instance;
-    private Context context;
+    private MainActivity mainActivity;
     private WeakReference<ProgressDialog> currentProgress;
     private String currentTitle;
     private String currentMessage;
@@ -30,8 +31,8 @@ public class ProgressDialogManager {
         return instance;
     }
 
-    public static ProgressDialogManager with(Context context) {
-        getInstance().context = context;
+    public static ProgressDialogManager with(MainActivity mainActivity) {
+        getInstance().mainActivity = mainActivity;
         return instance;
     }
 
@@ -40,8 +41,8 @@ public class ProgressDialogManager {
     }
     private void showImpl(int title, int message) {
 //        Log.d(TAG, "show progress dialog");
-        currentTitle = context.getString(title);
-        currentMessage = context.getString(message);
+        currentTitle = mainActivity.getString(title);
+        currentMessage = mainActivity.getString(message);
         currentProgressValue = 0;
         createDialog();
         active = true;
@@ -87,7 +88,7 @@ public class ProgressDialogManager {
     private void setNewTargetImpl(int message) {
         if (active) {
             ProgressDialog progress = currentProgress.get();
-            currentMessage = context.getString(message);
+            currentMessage = mainActivity.getString(message);
             progress.setMessage(currentMessage);
         }
     }
@@ -104,10 +105,10 @@ public class ProgressDialogManager {
 
     // private members only ============
     private void createDialog() {
-        if (context == null)
-            throw new RuntimeException("Please, use with() method to set context");
+        if (mainActivity == null)
+            throw new RuntimeException("Please, use with() method to set mainActivity");
 
-        ProgressDialog progress = new ProgressDialog(context);
+        ProgressDialog progress = new ProgressDialog(mainActivity);
         currentProgress = new WeakReference<>(progress);
         progress.setTitle(currentTitle);
         progress.setMessage(currentMessage);
@@ -121,6 +122,7 @@ public class ProgressDialogManager {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
                 active = false;
+                GoogleAnalyticsUtils.trackCancelLoading(mainActivity);
             }
         });
         progress.show();

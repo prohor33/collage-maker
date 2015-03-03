@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import prohor33.redmadrobot.test.R;
+import prohor33.redmadrobot.test.app.R;
 
 /**
  * Created by prohor on 25/02/15.

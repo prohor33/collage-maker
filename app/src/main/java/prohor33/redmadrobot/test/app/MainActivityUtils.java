@@ -26,8 +26,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.ads.Ads;
+import prohor33.redmadrobot.test.analytic.GoogleAnalyticsUtils;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.utility.ProgressDialogManager;
@@ -109,8 +109,11 @@ public class MainActivityUtils {
                                 mainActivity.getString(R.string.no_user_with_such_nickname),
                                 Toast.LENGTH_LONG).show();
                         ProgressDialogManager.dismiss();
+                        GoogleAnalyticsUtils.trackNoUserWithSuchNickname(mainActivity);
                     }
                 }).findUser(nickname);
+
+                GoogleAnalyticsUtils.trackPushGimmeCollageButton(mainActivity);
             }
         });
 
@@ -141,6 +144,7 @@ public class MainActivityUtils {
                         mainActivity.getString(R.string.user_have_no_public_media),
                         Toast.LENGTH_LONG).show();
                 ProgressDialogManager.dismiss();
+                GoogleAnalyticsUtils.trackUserHaveNoPublicImages(mainActivity);
             }
         }).fetchUserMedia();
     }
@@ -160,6 +164,7 @@ public class MainActivityUtils {
                 Toast.makeText(mainActivity, error,
                         Toast.LENGTH_LONG).show();
                 ProgressDialogManager.dismiss();
+                GoogleAnalyticsUtils.trackPreviewGenerationFails(mainActivity);
             }
         }).generateCollagePreview().with_progress(PROGRESS_FETCH_USER_MEDIA, PROGRESS_GENERATE_PREVIEW);
     }
@@ -212,6 +217,9 @@ public class MainActivityUtils {
         } else {
             flMain.getBackground().setColorFilter(null);
         }
+
+        if (show)
+            GoogleAnalyticsUtils.trackShowPreview(mainActivity);
     }
 
     private static void setupRoundButtons() {
@@ -223,6 +231,7 @@ public class MainActivityUtils {
             public void onClick(View view) {
                 RelativeLayout rlCollageGroup = (RelativeLayout) mainActivity.findViewById(R.id.rlCollageGroup);
                 showPreview(rlCollageGroup.getVisibility() == View.GONE);
+                GoogleAnalyticsUtils.trackPushClosePreviewButton(mainActivity);
             }
         });
 
@@ -233,6 +242,7 @@ public class MainActivityUtils {
             @Override
             public void onClick(View view) {
                 generateCollage(true);
+                GoogleAnalyticsUtils.trackPushShareCollageButton(mainActivity);
             }
         });
 
@@ -243,6 +253,7 @@ public class MainActivityUtils {
             @Override
             public void onClick(View view) {
                 generateCollage(false);
+                GoogleAnalyticsUtils.trackPushSaveCollageButton(mainActivity);
             }
         });
     }
@@ -300,6 +311,8 @@ public class MainActivityUtils {
             collage_w *= special_coef;
             // hack
             collage_w += 100;
+
+            GoogleAnalyticsUtils.trackNotQuadImage(mainActivity);
         }
 
 

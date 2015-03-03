@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import prohor33.redmadrobot.test.R;
 import prohor33.redmadrobot.test.collage_maker.CollageMaker;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.utility.ProgressDialogManager;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="prohor33.redmadrobot.test" >
+    package="prohor33.redmadrobot.test.app" >
 
     <!-- permissions -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
+        android:name=".CollageMakerApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"

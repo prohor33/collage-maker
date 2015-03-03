@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import prohor33.redmadrobot.test.R;
+import prohor33.redmadrobot.test.app.R;
 import prohor33.redmadrobot.test.instagram_api.InstagramAPI;
 import prohor33.redmadrobot.test.instagram_api.Storage;
 import prohor33.redmadrobot.test.utility.ImageLoadAsyncTask;
