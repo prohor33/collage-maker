@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -56,8 +58,6 @@ public class MainActivityUtils {
         mainActivity = activity;
 
         final EditText nickEditText = (EditText) mainActivity.findViewById(R.id.editText);
-        // TODO: remove
-        nickEditText.setText("damedvedev");
 
         putGimmeCollageButtonActive(!nickEditText.getText().toString().isEmpty());
         nickEditText.addTextChangedListener(new TextWatcher() {
@@ -121,6 +121,12 @@ public class MainActivityUtils {
         showPreview(CollageMaker.isShowingCollage());
 
         Ads.showBanner(mainActivity);
+
+        if (!AppInternalSettings.collectStatistics) {
+            // When dry run is set, hits will not be dispatched, but will still be logged as
+            // though they were dispatched.
+            GoogleAnalytics.getInstance(mainActivity).setDryRun(true);
+        }
     }
 
     // private members only =========

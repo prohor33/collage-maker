@@ -4,8 +4,6 @@ import android.app.Activity;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
-import prohor33.redmadrobot.test.app.AppInternalSettings;
 import prohor33.redmadrobot.test.app.CollageMakerApp;
 import prohor33.redmadrobot.test.app.R;
 
@@ -18,9 +16,6 @@ public class GoogleAnalyticsUtils {
 
     public static void SendEvent(Activity activity, final int categoryId, final int actionId,
                                  final int labelId) {
-
-        if (!AppInternalSettings.collectStatistics)
-            return;
 
         // Get tracker.
         Tracker t = ((CollageMakerApp)activity.getApplication()).getAppTracker(activity);
@@ -35,9 +30,6 @@ public class GoogleAnalyticsUtils {
 
     public static void SendEventWithValue(Activity activity, final int categoryId, final int actionId,
                                           final int labelId, final long value) {
-
-        if (!AppInternalSettings.collectStatistics)
-            return;
 
         // Get tracker.
         Tracker t = ((CollageMakerApp)activity.getApplication()).getAppTracker(activity);
