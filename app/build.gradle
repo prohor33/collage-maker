@@ -8,8 +8,8 @@ android {
         applicationId "prohor33.redmadrobot.test"
         minSdkVersion 10
         targetSdkVersion 21
-        versionCode 4
-        versionName "2.0"
+        versionCode 5
+        versionName "2.01"
     }
     buildTypes {
         release {
